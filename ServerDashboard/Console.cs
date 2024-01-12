@@ -3,26 +3,25 @@ using System.Diagnostics;
 using System.Management;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ServerDashboard
 {
     public partial class Console : Form
     {
-        Process _process;
-        String _path = "Please select a directory by clicking this text.";
-        String _jarFile;
-        List<string> _players;
-        Timer _updateRamAndCpu;
+        private Process _process;
+        private string _path = "Please select a directory by clicking this text.";
+        private string _jarFile;
+        private List<string> _players;
+        private readonly Timer _updateRamAndCpu;
 
         public Console()
         {
             InitializeComponent();
 
-            var adresses = Dns.GetHostAddresses(Dns.GetHostName());
-            var ip = "";
-            foreach(var ad in adresses)
+            IPAddress[] adresses = Dns.GetHostAddresses(Dns.GetHostName());
+            string ip = "";
+            foreach(IPAddress ad in adresses)
             {
                 if(ad.AddressFamily == AddressFamily.InterNetwork) { ip = ad.ToString(); }
             }
@@ -45,7 +44,9 @@ namespace ServerDashboard
 
             TSL_Status.Text = "Starting Server...";
             if(RTB_ConsoleLog.Text.Length > 0)
+            {
                 RTB_ConsoleLog.Clear();
+            }
 
             BTN_StartServer.Enabled = false;
 
@@ -67,10 +68,10 @@ namespace ServerDashboard
                 _process.ErrorDataReceived += Process_ErrorDataReceived;
 
                 // Start the process
-                _process.Start();
+                _ = _process.Start();
                 TSL_Status.Text = "Server running...";
 
-                _players = new List<string>();
+                _players = [];
 
                 // Begin asynchronously reading the output
                 _process.BeginOutputReadLine();
@@ -101,7 +102,7 @@ namespace ServerDashboard
             if(!string.IsNullOrEmpty(e.Data))
             {
                 // Use BeginInvoke to update the UI from the output data received event
-                RTB_ConsoleLog.BeginInvoke(new Action(() =>
+                _ = RTB_ConsoleLog.BeginInvoke(new Action(() =>
                 {
                     RTB_ConsoleLog.AppendText($"{e.Data}{Environment.NewLine}");
                     RTB_ConsoleLog.ScrollToCaret(); // Auto-scroll to the end
@@ -109,48 +110,48 @@ namespace ServerDashboard
 
                 if(e.Data.Contains("Starting Minecraft server on"))
                 {
-                    var port = e.Data.Split(':');
+                    string[] port = e.Data.Split(':');
 
                     TSL_ServerPort.Text = "Port: " + port[4];
                 }
 
                 if(e.Data.Contains("Done"))
                 {
-                    BTN_StopServer.BeginInvoke(new Action(() => { BTN_StopServer.Enabled = true; }));
-                    BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = true; }));
-                    TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = true; TBX_Command.Focus(); }));
+                    _ = BTN_StopServer.BeginInvoke(new Action(() => { BTN_StopServer.Enabled = true; }));
+                    _ = BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = true; }));
+                    _ = TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = true; _ = TBX_Command.Focus(); }));
                 }
 
                 if(e.Data.Contains("Stopping the server"))
                 {
-                    BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = false; }));
-                    TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = false; TBX_Command.Clear(); }));
+                    _ = BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = false; }));
+                    _ = TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = false; TBX_Command.Clear(); }));
                 }
 
                 if(e.Data.Contains("joined the game"))
                 {
-                    var tmpString = e.Data.Split(" ");
+                    string[] tmpString = e.Data.Split(" ");
                     _players.Add(tmpString[2]);
 
-                    LBX_PlayerList.BeginInvoke(new Action(() => { LBX_PlayerList.Items.Clear(); }));
-                    foreach(var player in _players)
+                    _ = LBX_PlayerList.BeginInvoke(new Action(LBX_PlayerList.Items.Clear));
+                    foreach(string player in _players)
                     {
-                        LBX_PlayerList.BeginInvoke(new Action(() => { LBX_PlayerList.Items.Add(player); }));
+                        _ = LBX_PlayerList.BeginInvoke(new Action(() => { _ = LBX_PlayerList.Items.Add(player); }));
                     }
-                    LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
+                    _ = LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
                 }
 
                 if(e.Data.Contains("left the game"))
                 {
-                    var tmpString = e.Data.Split(" ");
-                    _players.Remove(tmpString[2]);
+                    string[] tmpString = e.Data.Split(" ");
+                    _ = _players.Remove(tmpString[2]);
 
-                    LBX_PlayerList.BeginInvoke(new Action(() => { LBX_PlayerList.Items.Clear(); }));
-                    foreach(var player in _players)
+                    _ = LBX_PlayerList.BeginInvoke(new Action(LBX_PlayerList.Items.Clear));
+                    foreach(string player in _players)
                     {
-                        LBX_PlayerList.BeginInvoke(new Action(() => { LBX_PlayerList.Items.Add(player); }));
+                        _ = LBX_PlayerList.BeginInvoke(new Action(() => { _ = LBX_PlayerList.Items.Add(player); }));
                     }
-                    LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
+                    _ = LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
                 }
             }
         }
@@ -160,7 +161,7 @@ namespace ServerDashboard
             if(!string.IsNullOrEmpty(e.Data))
             {
                 // Use BeginInvoke to update the UI from the output data received event
-                RTB_ConsoleLog.BeginInvoke(new Action(() =>
+                _ = RTB_ConsoleLog.BeginInvoke(new Action(() =>
                 {
                     RTB_ConsoleLog.AppendText($"{e.Data}{Environment.NewLine}");
                     RTB_ConsoleLog.ScrollToCaret(); // Auto-scroll to the end
@@ -174,7 +175,7 @@ namespace ServerDashboard
             {
                 return;
             }
-            var input = "stop" + Environment.NewLine;
+            string input = "stop" + Environment.NewLine;
             _process.StandardInput.WriteLine(input);
             TSL_Status.Text = "Stopping server...";
         }
@@ -183,17 +184,17 @@ namespace ServerDashboard
         {
             try
             {
-                var EULA = File.ReadAllText(_path + @"\eula.txt");
+                string EULA = File.ReadAllText(_path + @"\eula.txt");
                 EULA = EULA.Replace("eula=false", "eula=true");
                 File.WriteAllText(_path + @"\eula.txt", EULA);
 
                 BTN_AgreeToEula.Enabled = false;
-                MessageBox.Show("EULA agreed successfully!");
+                _ = MessageBox.Show("EULA agreed successfully!");
                 TSL_Status.Text = "EULA agreed by user.";
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Unable to agree to eula.\n" + ex.Message);
+                _ = MessageBox.Show("Unable to agree to eula.\n" + ex.Message);
             }
         }
 
@@ -215,14 +216,14 @@ namespace ServerDashboard
 
         private async void TSL_Directory_Click(object sender, EventArgs e)
         {
-            var fBD = new FolderBrowserDialog();
+            FolderBrowserDialog fBD = new();
             if(fBD.ShowDialog() == DialogResult.OK)
             {
                 _path = fBD.SelectedPath;
                 TSL_Directory.Text = "Directory: " + _path;
             }
 
-            var files = Directory.GetFiles(_path, "*.jar");
+            string[] files = Directory.GetFiles(_path, "*.jar");
             if(files.Length == 0)
             {
                 if(MessageBox.Show("No .jar files detected in this directory. Download the latest?", "Download server.jar", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
@@ -231,27 +232,29 @@ namespace ServerDashboard
                 }
 
                 // Download latest .jar file from serverjars.com
-                var webClient = new WebClient();
+                WebClient webClient = new();
                 await Task.Run(new Action(() => { webClient.DownloadFile(@"https://serverjars.com/api/fetchJar/servers/purpur/", _path + @"\server.jar"); }));
                 _jarFile = @"server.jar";
 
-                MessageBox.Show(".jar file was downloaded successfully! You can start your server now.", "Download server.jar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _ = MessageBox.Show(".jar file was downloaded successfully! You can start your server now.", "Download server.jar", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                var _jarFileSplitLength = files[0].Split('\\').Length;
-                _jarFile = files[0].Split('\\')[_jarFileSplitLength -1];
+                int _jarFileSplitLength = files[0].Split('\\').Length;
+                _jarFile = files[0].Split('\\')[_jarFileSplitLength - 1];
             }
         }
 
         private void KickPlayerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(LBX_PlayerList.SelectedItems.Count == 0)
+            {
                 return;
+            }
 
             string reason = Interaction.InputBox("Enter reason:", "Kick reason", "Kicked by an operator.");
 
-            foreach(var selectedPlayer in LBX_PlayerList.SelectedItems)
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
             {
                 _process.StandardInput.WriteLine($"kick {selectedPlayer} {reason}");
             }
@@ -263,7 +266,7 @@ namespace ServerDashboard
         {
             if(e.Button == MouseButtons.Right)
             {
-                var index = LBX_PlayerList.IndexFromPoint(e.Location);
+                int index = LBX_PlayerList.IndexFromPoint(e.Location);
 
                 if(index >= 0)
                 {
@@ -276,11 +279,13 @@ namespace ServerDashboard
         private void banPlayerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(LBX_PlayerList.SelectedItems.Count == 0)
+            {
                 return;
+            }
 
             string reason = Interaction.InputBox("Enter reason:", "Ban reason", "Banned by an operator.");
 
-            foreach(var selectedPlayer in LBX_PlayerList.SelectedItems)
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
             {
                 _process.StandardInput.WriteLine($"ban {selectedPlayer} {reason}");
             }
@@ -291,10 +296,11 @@ namespace ServerDashboard
         private void makePlayerAnOPToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(LBX_PlayerList.SelectedItems.Count == 0)
+            {
                 return;
+            }
 
-
-            foreach(var selectedPlayer in LBX_PlayerList.SelectedItems)
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
             {
                 if(MessageBox.Show($"Do you really want to give all the power to {selectedPlayer}?", "Make player an operator?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
                 {
@@ -309,17 +315,17 @@ namespace ServerDashboard
         private void updateRamAndCpu_Tick(object sender, EventArgs e)
         {
             #region RAM
-            var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
+            ManagementObjectSearcher wmiObject = new("select * from Win32_OperatingSystem");
 
             var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
             {
-                FreePhysicalMemory = Double.Parse(mo["FreePhysicalMemory"].ToString()),
-                TotalVisibleMemorySize = Double.Parse(mo["TotalVisibleMemorySize"].ToString())
+                FreePhysicalMemory = double.Parse(mo["FreePhysicalMemory"].ToString()),
+                TotalVisibleMemorySize = double.Parse(mo["TotalVisibleMemorySize"].ToString())
             }).FirstOrDefault();
 
             if(memoryValues != null)
             {
-                var percent = ((memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize) * 100;
+                double percent = (memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize * 100;
 
                 TSL_RamState.Text = "RAM usage: " + Math.Round(percent).ToString() + "%";
             }
@@ -327,7 +333,7 @@ namespace ServerDashboard
 
 
             #region CPU
-            
+
             #endregion
         }
     }
