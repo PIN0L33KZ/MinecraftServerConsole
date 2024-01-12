@@ -1,15 +1,20 @@
 using Microsoft.VisualBasic;
 using System.Diagnostics;
+using System.Management;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
+using Timer = System.Windows.Forms.Timer;
 
 namespace ServerDashboard
 {
     public partial class Console : Form
     {
         Process _process;
-        String _path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\server";
+        String _path = "Please select a directory by clicking this text.";
+        String _jarFile;
         List<string> _players;
+        Timer _updateRamAndCpu;
 
         public Console()
         {
@@ -24,28 +29,38 @@ namespace ServerDashboard
             TSL_IP.Text = "IP: " + ip;
 
             TSL_Directory.Text = "Directory: " + _path;
+
+            _updateRamAndCpu = new Timer() { Interval = 1000 };
+            _updateRamAndCpu.Tick += updateRamAndCpu_Tick;
+            _updateRamAndCpu.Start();
         }
 
         private async void BTN_StartServer_Click(object sender, EventArgs e)
         {
+            if(_path == "Please select a directory by clicking this text.")
+            {
+                RTB_ConsoleLog.AppendText("Please select a directory first!");
+                return;
+            }
+
             TSL_Status.Text = "Starting Server...";
             if(RTB_ConsoleLog.Text.Length > 0)
                 RTB_ConsoleLog.Clear();
 
             BTN_StartServer.Enabled = false;
-            BTN_StopServer.Enabled = true;
 
             await Task.Run(() =>
             {
                 // Set up the process with the command you want to run
                 _process = new Process();
                 _process.StartInfo.FileName = "cmd.exe";
-                _process.StartInfo.Arguments = $"/c cd \"{_path}\" && java -Xmx1G -Xms1G -jar purpur-1.20.4.jar nogui";
+                _process.StartInfo.Arguments = $"/c chdir && cd \"{_path}\" && java -Xmx1G -Xms1G -jar {_jarFile} nogui";
                 _process.StartInfo.UseShellExecute = false;
                 _process.StartInfo.RedirectStandardOutput = true;
                 _process.StartInfo.RedirectStandardInput = true;
                 _process.StartInfo.RedirectStandardError = true;
                 _process.StartInfo.CreateNoWindow = true;
+
 
                 // Set up event handlers for capturing output
                 _process.OutputDataReceived += Process_OutputDataReceived;
@@ -59,6 +74,7 @@ namespace ServerDashboard
 
                 // Begin asynchronously reading the output
                 _process.BeginOutputReadLine();
+                _process.BeginErrorReadLine();
 
                 // Wait for the process to exit
                 _process.WaitForExit();
@@ -100,6 +116,7 @@ namespace ServerDashboard
 
                 if(e.Data.Contains("Done"))
                 {
+                    BTN_StopServer.BeginInvoke(new Action(() => { BTN_StopServer.Enabled = true; }));
                     BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = true; }));
                     TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = true; TBX_Command.Focus(); }));
                 }
@@ -164,12 +181,11 @@ namespace ServerDashboard
 
         private void BTN_AgreeToEula_Click(object sender, EventArgs e)
         {
-            var path = @"C:\Users\marce\Documents\server\";
             try
             {
-                var EULA = File.ReadAllText(path + @"eula.txt");
+                var EULA = File.ReadAllText(_path + @"\eula.txt");
                 EULA = EULA.Replace("eula=false", "eula=true");
-                File.WriteAllText(path + @"eula.txt", EULA);
+                File.WriteAllText(_path + @"\eula.txt", EULA);
 
                 BTN_AgreeToEula.Enabled = false;
                 MessageBox.Show("EULA agreed successfully!");
@@ -197,7 +213,7 @@ namespace ServerDashboard
             }
         }
 
-        private void TSL_Directory_Click(object sender, EventArgs e)
+        private async void TSL_Directory_Click(object sender, EventArgs e)
         {
             var fBD = new FolderBrowserDialog();
             if(fBD.ShowDialog() == DialogResult.OK)
@@ -205,17 +221,42 @@ namespace ServerDashboard
                 _path = fBD.SelectedPath;
                 TSL_Directory.Text = "Directory: " + _path;
             }
+
+            var files = Directory.GetFiles(_path, "*.jar");
+            if(files.Length == 0)
+            {
+                if(MessageBox.Show("No .jar files detected in this directory. Download the latest?", "Download server.jar", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                // Download latest .jar file from serverjars.com
+                var webClient = new WebClient();
+                await Task.Run(new Action(() => { webClient.DownloadFile(@"https://serverjars.com/api/fetchJar/servers/purpur/", _path + @"\server.jar"); }));
+                _jarFile = @"server.jar";
+
+                MessageBox.Show(".jar file was downloaded successfully! You can start your server now.", "Download server.jar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                var _jarFileSplitLength = files[0].Split('\\').Length;
+                _jarFile = files[0].Split('\\')[_jarFileSplitLength -1];
+            }
         }
 
-        private void kickPlayerToolStripMenuItem_Click(object sender, EventArgs e)
+        private void KickPlayerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(LBX_PlayerList.SelectedItems.Count == 0)
                 return;
 
+            string reason = Interaction.InputBox("Enter reason:", "Kick reason", "Kicked by an operator.");
+
             foreach(var selectedPlayer in LBX_PlayerList.SelectedItems)
             {
-                _process.StandardInput.WriteLine($"kick {selectedPlayer}");
+                _process.StandardInput.WriteLine($"kick {selectedPlayer} {reason}");
             }
+
+            LBX_PlayerList.SelectedIndex = -1;
         }
 
         private void LBX_PlayerList_MouseUp(object sender, MouseEventArgs e)
@@ -243,6 +284,8 @@ namespace ServerDashboard
             {
                 _process.StandardInput.WriteLine($"ban {selectedPlayer} {reason}");
             }
+
+            LBX_PlayerList.SelectedIndex = -1;
         }
 
         private void makePlayerAnOPToolStripMenuItem_Click(object sender, EventArgs e)
@@ -259,6 +302,33 @@ namespace ServerDashboard
                 }
                 _process.StandardInput.WriteLine($"op {selectedPlayer}");
             }
+
+            LBX_PlayerList.SelectedIndex = -1;
+        }
+
+        private void updateRamAndCpu_Tick(object sender, EventArgs e)
+        {
+            #region RAM
+            var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
+
+            var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
+            {
+                FreePhysicalMemory = Double.Parse(mo["FreePhysicalMemory"].ToString()),
+                TotalVisibleMemorySize = Double.Parse(mo["TotalVisibleMemorySize"].ToString())
+            }).FirstOrDefault();
+
+            if(memoryValues != null)
+            {
+                var percent = ((memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize) * 100;
+
+                TSL_RamState.Text = "RAM usage: " + Math.Round(percent).ToString() + "%";
+            }
+            #endregion
+
+
+            #region CPU
+            
+            #endregion
         }
     }
 }

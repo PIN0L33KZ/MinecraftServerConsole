@@ -44,6 +44,10 @@
             TSL_ServerPort = new ToolStripStatusLabel();
             TSL_Spacing3 = new ToolStripStatusLabel();
             TSL_Directory = new ToolStripStatusLabel();
+            TSL_Spacing4 = new ToolStripStatusLabel();
+            TSL_RamState = new ToolStripStatusLabel();
+            TSL_Spacing5 = new ToolStripStatusLabel();
+            TSL_CpuState = new ToolStripStatusLabel();
             PNL_LowerSpaceing = new Panel();
             TBX_Command = new TextBox();
             BTN_SendCommand = new Button();
@@ -147,7 +151,7 @@
             // 
             STS_Status.BackColor = SystemColors.ControlLight;
             STS_Status.Font = new Font("Segoe UI", 9F);
-            STS_Status.Items.AddRange(new ToolStripItem[] { TSL_Status, TSL_Spacing1, TSL_IP, TSL_Spacing2, TSL_ServerPort, TSL_Spacing3, TSL_Directory });
+            STS_Status.Items.AddRange(new ToolStripItem[] { TSL_Status, TSL_Spacing1, TSL_IP, TSL_Spacing2, TSL_ServerPort, TSL_Spacing3, TSL_Directory, TSL_Spacing4, TSL_RamState, TSL_Spacing5, TSL_CpuState });
             STS_Status.Location = new Point(0, 543);
             STS_Status.Name = "STS_Status";
             STS_Status.Size = new Size(1017, 22);
@@ -199,6 +203,30 @@
             TSL_Directory.Size = new Size(55, 17);
             TSL_Directory.Text = "Directory";
             TSL_Directory.Click += TSL_Directory_Click;
+            // 
+            // TSL_Spacing4
+            // 
+            TSL_Spacing4.Name = "TSL_Spacing4";
+            TSL_Spacing4.Size = new Size(22, 17);
+            TSL_Spacing4.Text = "     ";
+            // 
+            // TSL_RamState
+            // 
+            TSL_RamState.Name = "TSL_RamState";
+            TSL_RamState.Size = new Size(73, 17);
+            TSL_RamState.Text = "RAM usage: ";
+            // 
+            // TSL_Spacing5
+            // 
+            TSL_Spacing5.Name = "TSL_Spacing5";
+            TSL_Spacing5.Size = new Size(22, 17);
+            TSL_Spacing5.Text = "     ";
+            // 
+            // TSL_CpuState
+            // 
+            TSL_CpuState.Name = "TSL_CpuState";
+            TSL_CpuState.Size = new Size(67, 17);
+            TSL_CpuState.Text = "CPU usage:";
             // 
             // PNL_LowerSpaceing
             // 
@@ -287,7 +315,7 @@
             kickPlayerToolStripMenuItem.Name = "kickPlayerToolStripMenuItem";
             kickPlayerToolStripMenuItem.Size = new Size(173, 22);
             kickPlayerToolStripMenuItem.Text = "Kick player";
-            kickPlayerToolStripMenuItem.Click += kickPlayerToolStripMenuItem_Click;
+            kickPlayerToolStripMenuItem.Click += KickPlayerToolStripMenuItem_Click;
             // 
             // banPlayerToolStripMenuItem
             // 
@@ -356,5 +384,9 @@
         private ToolStripMenuItem kickPlayerToolStripMenuItem;
         private ToolStripMenuItem banPlayerToolStripMenuItem;
         private ToolStripMenuItem makePlayerAnOPToolStripMenuItem;
+        private ToolStripStatusLabel TSL_Spacing4;
+        private ToolStripStatusLabel TSL_RamState;
+        private ToolStripStatusLabel TSL_Spacing5;
+        private ToolStripStatusLabel TSL_CpuState;
     }
 }
