@@ -1,3 +1,4 @@
+using Microsoft.VisualBasic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
@@ -7,7 +8,8 @@ namespace ServerDashboard
     public partial class Console : Form
     {
         Process _process;
-        String _path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        String _path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\server";
+        List<string> _players;
 
         public Console()
         {
@@ -53,6 +55,8 @@ namespace ServerDashboard
                 _process.Start();
                 TSL_Status.Text = "Server running...";
 
+                _players = new List<string>();
+
                 // Begin asynchronously reading the output
                 _process.BeginOutputReadLine();
 
@@ -63,6 +67,7 @@ namespace ServerDashboard
                 _process.Close();
                 TSL_Status.Text = "Server stopped.";
                 TSL_ServerPort.Text = "";
+                _players.Clear();
             });
 
             BTN_StopServer.Enabled = false;
@@ -104,6 +109,32 @@ namespace ServerDashboard
                     BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = false; }));
                     TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = false; TBX_Command.Clear(); }));
                 }
+
+                if(e.Data.Contains("joined the game"))
+                {
+                    var tmpString = e.Data.Split(" ");
+                    _players.Add(tmpString[2]);
+
+                    LBX_PlayerList.BeginInvoke(new Action(() => { LBX_PlayerList.Items.Clear(); }));
+                    foreach(var player in _players)
+                    {
+                        LBX_PlayerList.BeginInvoke(new Action(() => { LBX_PlayerList.Items.Add(player); }));
+                    }
+                    LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
+                }
+
+                if(e.Data.Contains("left the game"))
+                {
+                    var tmpString = e.Data.Split(" ");
+                    _players.Remove(tmpString[2]);
+
+                    LBX_PlayerList.BeginInvoke(new Action(() => { LBX_PlayerList.Items.Clear(); }));
+                    foreach(var player in _players)
+                    {
+                        LBX_PlayerList.BeginInvoke(new Action(() => { LBX_PlayerList.Items.Add(player); }));
+                    }
+                    LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
+                }
             }
         }
 
@@ -122,6 +153,10 @@ namespace ServerDashboard
 
         private void BTN_StopServer_Click(object sender, EventArgs e)
         {
+            if(MessageBox.Show("Do you wish to shutdown your server?", "Stop server", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+            {
+                return;
+            }
             var input = "stop" + Environment.NewLine;
             _process.StandardInput.WriteLine(input);
             TSL_Status.Text = "Stopping server...";
@@ -169,6 +204,60 @@ namespace ServerDashboard
             {
                 _path = fBD.SelectedPath;
                 TSL_Directory.Text = "Directory: " + _path;
+            }
+        }
+
+        private void kickPlayerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(LBX_PlayerList.SelectedItems.Count == 0)
+                return;
+
+            foreach(var selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                _process.StandardInput.WriteLine($"kick {selectedPlayer}");
+            }
+        }
+
+        private void LBX_PlayerList_MouseUp(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                var index = LBX_PlayerList.IndexFromPoint(e.Location);
+
+                if(index >= 0)
+                {
+                    LBX_PlayerList.SelectedItem = LBX_PlayerList.Items[index];
+                    CMS_PlayerList.Show(LBX_PlayerList, e.Location);
+                }
+            }
+        }
+
+        private void banPlayerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(LBX_PlayerList.SelectedItems.Count == 0)
+                return;
+
+            string reason = Interaction.InputBox("Enter reason:", "Ban reason", "Banned by an operator.");
+
+            foreach(var selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                _process.StandardInput.WriteLine($"ban {selectedPlayer} {reason}");
+            }
+        }
+
+        private void makePlayerAnOPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(LBX_PlayerList.SelectedItems.Count == 0)
+                return;
+
+
+            foreach(var selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                if(MessageBox.Show($"Do you really want to give all the power to {selectedPlayer}?", "Make player an operator?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+                {
+                    return;
+                }
+                _process.StandardInput.WriteLine($"op {selectedPlayer}");
             }
         }
     }
