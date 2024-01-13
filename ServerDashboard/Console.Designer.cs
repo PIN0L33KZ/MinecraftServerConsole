@@ -55,15 +55,23 @@
             LBX_PlayerList = new ListBox();
             LBL_PlayerList = new Label();
             CMS_PlayerList = new ContextMenuStrip(components);
-            kickPlayerToolStripMenuItem = new ToolStripMenuItem();
-            banPlayerToolStripMenuItem = new ToolStripMenuItem();
-            makePlayerAnOPToolStripMenuItem = new ToolStripMenuItem();
+            SMI_KickPlayer = new ToolStripMenuItem();
+            SMI_BanPlayer = new ToolStripMenuItem();
+            SMI_OpPlayer = new ToolStripMenuItem();
+            PNL_PluginsList = new Panel();
+            LBX_PluginsList = new ListBox();
+            LBL_PluginsList = new Label();
+            CMS_PluginsList = new ContextMenuStrip(components);
+            SMI_EditPluiginConfig = new ToolStripMenuItem();
+            SMI_CheckPluiginUpdate = new ToolStripMenuItem();
             PNL_UpperSpaceing.SuspendLayout();
             PNL_Fill.SuspendLayout();
             STS_Status.SuspendLayout();
             PNL_LowerSpaceing.SuspendLayout();
             PNL_PlayerList.SuspendLayout();
             CMS_PlayerList.SuspendLayout();
+            PNL_PluginsList.SuspendLayout();
+            CMS_PluginsList.SuspendLayout();
             SuspendLayout();
             // 
             // PNL_UpperSpaceing
@@ -75,7 +83,7 @@
             PNL_UpperSpaceing.Dock = DockStyle.Top;
             PNL_UpperSpaceing.Location = new Point(0, 0);
             PNL_UpperSpaceing.Name = "PNL_UpperSpaceing";
-            PNL_UpperSpaceing.Size = new Size(864, 58);
+            PNL_UpperSpaceing.Size = new Size(992, 58);
             PNL_UpperSpaceing.TabIndex = 0;
             // 
             // BTN_AgreeToEula
@@ -85,7 +93,7 @@
             BTN_AgreeToEula.BackColor = Color.White;
             BTN_AgreeToEula.Enabled = false;
             BTN_AgreeToEula.Font = new Font("Segoe UI", 9F);
-            BTN_AgreeToEula.Location = new Point(736, 18);
+            BTN_AgreeToEula.Location = new Point(864, 18);
             BTN_AgreeToEula.Name = "BTN_AgreeToEula";
             BTN_AgreeToEula.Size = new Size(119, 23);
             BTN_AgreeToEula.TabIndex = 2;
@@ -100,7 +108,7 @@
             BTN_StopServer.BackColor = Color.White;
             BTN_StopServer.Enabled = false;
             BTN_StopServer.Font = new Font("Segoe UI", 9F);
-            BTN_StopServer.Location = new Point(437, 18);
+            BTN_StopServer.Location = new Point(501, 18);
             BTN_StopServer.Name = "BTN_StopServer";
             BTN_StopServer.Size = new Size(75, 23);
             BTN_StopServer.TabIndex = 1;
@@ -114,7 +122,7 @@
             BTN_StartServer.AutoEllipsis = true;
             BTN_StartServer.BackColor = Color.White;
             BTN_StartServer.Font = new Font("Segoe UI", 9F);
-            BTN_StartServer.Location = new Point(356, 18);
+            BTN_StartServer.Location = new Point(420, 18);
             BTN_StartServer.Name = "BTN_StartServer";
             BTN_StartServer.Size = new Size(75, 23);
             BTN_StartServer.TabIndex = 0;
@@ -126,9 +134,9 @@
             // 
             PNL_Fill.Controls.Add(RTB_ConsoleLog);
             PNL_Fill.Dock = DockStyle.Fill;
-            PNL_Fill.Location = new Point(0, 58);
+            PNL_Fill.Location = new Point(0, 0);
             PNL_Fill.Name = "PNL_Fill";
-            PNL_Fill.Size = new Size(864, 442);
+            PNL_Fill.Size = new Size(1298, 500);
             PNL_Fill.TabIndex = 1;
             // 
             // RTB_ConsoleLog
@@ -141,7 +149,7 @@
             RTB_ConsoleLog.Location = new Point(0, 0);
             RTB_ConsoleLog.Name = "RTB_ConsoleLog";
             RTB_ConsoleLog.ReadOnly = true;
-            RTB_ConsoleLog.Size = new Size(864, 442);
+            RTB_ConsoleLog.Size = new Size(1298, 500);
             RTB_ConsoleLog.TabIndex = 0;
             RTB_ConsoleLog.TabStop = false;
             RTB_ConsoleLog.Text = "";
@@ -154,7 +162,7 @@
             STS_Status.Items.AddRange(new ToolStripItem[] { TSL_Status, TSL_Spacing1, TSL_IP, TSL_Spacing2, TSL_ServerPort, TSL_Spacing3, TSL_Directory, TSL_Spacing4, TSL_RamState, TSL_Spacing5, TSL_CpuState });
             STS_Status.Location = new Point(0, 543);
             STS_Status.Name = "STS_Status";
-            STS_Status.Size = new Size(1017, 22);
+            STS_Status.Size = new Size(1298, 22);
             STS_Status.TabIndex = 2;
             // 
             // TSL_Status
@@ -236,7 +244,7 @@
             PNL_LowerSpaceing.Dock = DockStyle.Bottom;
             PNL_LowerSpaceing.Location = new Point(0, 500);
             PNL_LowerSpaceing.Name = "PNL_LowerSpaceing";
-            PNL_LowerSpaceing.Size = new Size(1017, 43);
+            PNL_LowerSpaceing.Size = new Size(1298, 43);
             PNL_LowerSpaceing.TabIndex = 3;
             // 
             // TBX_Command
@@ -249,7 +257,7 @@
             TBX_Command.ForeColor = SystemColors.ControlText;
             TBX_Command.Location = new Point(12, 10);
             TBX_Command.Name = "TBX_Command";
-            TBX_Command.Size = new Size(920, 23);
+            TBX_Command.Size = new Size(1201, 23);
             TBX_Command.TabIndex = 0;
             TBX_Command.WordWrap = false;
             TBX_Command.KeyDown += TBX_Command_KeyDown;
@@ -261,7 +269,7 @@
             BTN_SendCommand.BackColor = Color.White;
             BTN_SendCommand.Enabled = false;
             BTN_SendCommand.Font = new Font("Segoe UI", 9F);
-            BTN_SendCommand.Location = new Point(938, 10);
+            BTN_SendCommand.Location = new Point(1219, 10);
             BTN_SendCommand.Name = "BTN_SendCommand";
             BTN_SendCommand.Size = new Size(75, 23);
             BTN_SendCommand.TabIndex = 1;
@@ -274,7 +282,7 @@
             PNL_PlayerList.Controls.Add(LBX_PlayerList);
             PNL_PlayerList.Controls.Add(LBL_PlayerList);
             PNL_PlayerList.Dock = DockStyle.Right;
-            PNL_PlayerList.Location = new Point(864, 0);
+            PNL_PlayerList.Location = new Point(992, 0);
             PNL_PlayerList.Name = "PNL_PlayerList";
             PNL_PlayerList.Size = new Size(153, 500);
             PNL_PlayerList.TabIndex = 4;
@@ -285,6 +293,7 @@
             LBX_PlayerList.BackColor = SystemColors.Control;
             LBX_PlayerList.BorderStyle = BorderStyle.None;
             LBX_PlayerList.FormattingEnabled = true;
+            LBX_PlayerList.HorizontalScrollbar = true;
             LBX_PlayerList.ItemHeight = 15;
             LBX_PlayerList.Location = new Point(0, 33);
             LBX_PlayerList.Name = "LBX_PlayerList";
@@ -305,40 +314,97 @@
             // 
             // CMS_PlayerList
             // 
-            CMS_PlayerList.Items.AddRange(new ToolStripItem[] { kickPlayerToolStripMenuItem, banPlayerToolStripMenuItem, makePlayerAnOPToolStripMenuItem });
+            CMS_PlayerList.Items.AddRange(new ToolStripItem[] { SMI_KickPlayer, SMI_BanPlayer, SMI_OpPlayer });
             CMS_PlayerList.Name = "CMS_PlayerList";
             CMS_PlayerList.RenderMode = ToolStripRenderMode.System;
             CMS_PlayerList.Size = new Size(174, 70);
             // 
-            // kickPlayerToolStripMenuItem
+            // SMI_KickPlayer
             // 
-            kickPlayerToolStripMenuItem.Name = "kickPlayerToolStripMenuItem";
-            kickPlayerToolStripMenuItem.Size = new Size(173, 22);
-            kickPlayerToolStripMenuItem.Text = "Kick player";
-            kickPlayerToolStripMenuItem.Click += KickPlayerToolStripMenuItem_Click;
+            SMI_KickPlayer.Name = "SMI_KickPlayer";
+            SMI_KickPlayer.Size = new Size(173, 22);
+            SMI_KickPlayer.Text = "Kick player";
+            SMI_KickPlayer.Click += SMI_KickPlayer_Click;
             // 
-            // banPlayerToolStripMenuItem
+            // SMI_BanPlayer
             // 
-            banPlayerToolStripMenuItem.Name = "banPlayerToolStripMenuItem";
-            banPlayerToolStripMenuItem.Size = new Size(173, 22);
-            banPlayerToolStripMenuItem.Text = "Ban player";
-            banPlayerToolStripMenuItem.Click += banPlayerToolStripMenuItem_Click;
+            SMI_BanPlayer.Name = "SMI_BanPlayer";
+            SMI_BanPlayer.Size = new Size(173, 22);
+            SMI_BanPlayer.Text = "Ban player";
+            SMI_BanPlayer.Click += SMI_BanPlayer_Click;
             // 
-            // makePlayerAnOPToolStripMenuItem
+            // SMI_OpPlayer
             // 
-            makePlayerAnOPToolStripMenuItem.Name = "makePlayerAnOPToolStripMenuItem";
-            makePlayerAnOPToolStripMenuItem.Size = new Size(173, 22);
-            makePlayerAnOPToolStripMenuItem.Text = "Make player an OP";
-            makePlayerAnOPToolStripMenuItem.Click += makePlayerAnOPToolStripMenuItem_Click;
+            SMI_OpPlayer.Name = "SMI_OpPlayer";
+            SMI_OpPlayer.Size = new Size(173, 22);
+            SMI_OpPlayer.Text = "Make player an OP";
+            SMI_OpPlayer.Click += SMI_OpPlayer_Click;
+            // 
+            // PNL_PluginsList
+            // 
+            PNL_PluginsList.Controls.Add(LBX_PluginsList);
+            PNL_PluginsList.Controls.Add(LBL_PluginsList);
+            PNL_PluginsList.Dock = DockStyle.Right;
+            PNL_PluginsList.Location = new Point(1145, 0);
+            PNL_PluginsList.Name = "PNL_PluginsList";
+            PNL_PluginsList.Size = new Size(153, 500);
+            PNL_PluginsList.TabIndex = 5;
+            // 
+            // LBX_PluginsList
+            // 
+            LBX_PluginsList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            LBX_PluginsList.BackColor = SystemColors.Control;
+            LBX_PluginsList.BorderStyle = BorderStyle.None;
+            LBX_PluginsList.FormattingEnabled = true;
+            LBX_PluginsList.HorizontalScrollbar = true;
+            LBX_PluginsList.ItemHeight = 15;
+            LBX_PluginsList.Location = new Point(0, 33);
+            LBX_PluginsList.Name = "LBX_PluginsList";
+            LBX_PluginsList.Size = new Size(153, 465);
+            LBX_PluginsList.Sorted = true;
+            LBX_PluginsList.TabIndex = 1;
+            LBX_PluginsList.UseTabStops = false;
+            LBX_PluginsList.MouseUp += LBX_PluginsList_MouseUp;
+            // 
+            // LBL_PluginsList
+            // 
+            LBL_PluginsList.AutoSize = true;
+            LBL_PluginsList.Location = new Point(6, 9);
+            LBL_PluginsList.Name = "LBL_PluginsList";
+            LBL_PluginsList.Size = new Size(66, 15);
+            LBL_PluginsList.TabIndex = 0;
+            LBL_PluginsList.Text = "Plugins (0):";
+            // 
+            // CMS_PluginsList
+            // 
+            CMS_PluginsList.Items.AddRange(new ToolStripItem[] { SMI_EditPluiginConfig, SMI_CheckPluiginUpdate });
+            CMS_PluginsList.Name = "CMS_PlayerList";
+            CMS_PluginsList.RenderMode = ToolStripRenderMode.System;
+            CMS_PluginsList.Size = new Size(171, 48);
+            // 
+            // SMI_EditPluiginConfig
+            // 
+            SMI_EditPluiginConfig.Name = "SMI_EditPluiginConfig";
+            SMI_EditPluiginConfig.Size = new Size(170, 22);
+            SMI_EditPluiginConfig.Text = "Edit config";
+            SMI_EditPluiginConfig.Click += SMI_EditPluiginConfig_Click;
+            // 
+            // SMI_CheckPluiginUpdate
+            // 
+            SMI_CheckPluiginUpdate.Name = "SMI_CheckPluiginUpdate";
+            SMI_CheckPluiginUpdate.Size = new Size(170, 22);
+            SMI_CheckPluiginUpdate.Text = "Check for updates";
+            SMI_CheckPluiginUpdate.Click += SMI_CheckPluiginUpdate_Click;
             // 
             // Console
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1017, 565);
-            Controls.Add(PNL_Fill);
+            ClientSize = new Size(1298, 565);
             Controls.Add(PNL_UpperSpaceing);
             Controls.Add(PNL_PlayerList);
+            Controls.Add(PNL_PluginsList);
+            Controls.Add(PNL_Fill);
             Controls.Add(PNL_LowerSpaceing);
             Controls.Add(STS_Status);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -354,6 +420,9 @@
             PNL_PlayerList.ResumeLayout(false);
             PNL_PlayerList.PerformLayout();
             CMS_PlayerList.ResumeLayout(false);
+            PNL_PluginsList.ResumeLayout(false);
+            PNL_PluginsList.PerformLayout();
+            CMS_PluginsList.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -381,12 +450,18 @@
         private Label LBL_PlayerList;
         private ListBox LBX_PlayerList;
         private ContextMenuStrip CMS_PlayerList;
-        private ToolStripMenuItem kickPlayerToolStripMenuItem;
-        private ToolStripMenuItem banPlayerToolStripMenuItem;
-        private ToolStripMenuItem makePlayerAnOPToolStripMenuItem;
+        private ToolStripMenuItem SMI_KickPlayer;
+        private ToolStripMenuItem SMI_BanPlayer;
+        private ToolStripMenuItem SMI_OpPlayer;
         private ToolStripStatusLabel TSL_Spacing4;
         private ToolStripStatusLabel TSL_RamState;
         private ToolStripStatusLabel TSL_Spacing5;
         private ToolStripStatusLabel TSL_CpuState;
+        private Panel PNL_PluginsList;
+        private ListBox LBX_PluginsList;
+        private Label LBL_PluginsList;
+        private ContextMenuStrip CMS_PluginsList;
+        private ToolStripMenuItem SMI_EditPluiginConfig;
+        private ToolStripMenuItem SMI_CheckPluiginUpdate;
     }
 }

@@ -1,8 +1,10 @@
 using Microsoft.VisualBasic;
 using System.Diagnostics;
+using System.IO;
 using System.Management;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 using Timer = System.Windows.Forms.Timer;
 
 namespace ServerDashboard
@@ -13,7 +15,6 @@ namespace ServerDashboard
         private string _path = "Please select a directory by clicking this text.";
         private string _jarFile;
         private List<string> _players;
-        private readonly Timer _updateRamAndCpu;
 
         public Console()
         {
@@ -29,9 +30,9 @@ namespace ServerDashboard
 
             TSL_Directory.Text = "Directory: " + _path;
 
-            _updateRamAndCpu = new Timer() { Interval = 1000 };
-            _updateRamAndCpu.Tick += updateRamAndCpu_Tick;
-            _updateRamAndCpu.Start();
+            var updateRamState = Task.Run(new Action(UpdateRamState));
+
+            var updateCpuState = Task.Run(new Action(UpdateCpuState));
         }
 
         private async void BTN_StartServer_Click(object sender, EventArgs e)
@@ -243,23 +244,16 @@ namespace ServerDashboard
                 int _jarFileSplitLength = files[0].Split('\\').Length;
                 _jarFile = files[0].Split('\\')[_jarFileSplitLength - 1];
             }
-        }
 
-        private void KickPlayerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if(LBX_PlayerList.SelectedItems.Count == 0)
+            LBX_PluginsList.Items.Clear();
+            string[] pluginFiles = Directory.GetFiles(_path + @"\plugins", "*.jar");
+            foreach(string file in pluginFiles)
             {
-                return;
+                var fileSplit = file.Split('\\');
+                LBX_PluginsList.Items.Add(fileSplit[fileSplit.Length - 1]);
             }
 
-            string reason = Interaction.InputBox("Enter reason:", "Kick reason", "Kicked by an operator.");
-
-            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
-            {
-                _process.StandardInput.WriteLine($"kick {selectedPlayer} {reason}");
-            }
-
-            LBX_PlayerList.SelectedIndex = -1;
+            LBL_PluginsList.Text = $"Plugins ({pluginFiles.Length}): ";
         }
 
         private void LBX_PlayerList_MouseUp(object sender, MouseEventArgs e)
@@ -276,7 +270,24 @@ namespace ServerDashboard
             }
         }
 
-        private void banPlayerToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SMI_KickPlayer_Click(object sender, EventArgs e)
+        {
+            if(LBX_PlayerList.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            string reason = Interaction.InputBox("Enter reason:", "Kick reason", "Kicked by an operator.");
+
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                _process.StandardInput.WriteLine($"kick {selectedPlayer} {reason}");
+            }
+
+            LBX_PlayerList.SelectedIndex = -1;
+        }
+
+        private void SMI_BanPlayer_Click(object sender, EventArgs e)
         {
             if(LBX_PlayerList.SelectedItems.Count == 0)
             {
@@ -293,7 +304,7 @@ namespace ServerDashboard
             LBX_PlayerList.SelectedIndex = -1;
         }
 
-        private void makePlayerAnOPToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SMI_OpPlayer_Click(object sender, EventArgs e)
         {
             if(LBX_PlayerList.SelectedItems.Count == 0)
             {
@@ -312,29 +323,77 @@ namespace ServerDashboard
             LBX_PlayerList.SelectedIndex = -1;
         }
 
-        private void updateRamAndCpu_Tick(object sender, EventArgs e)
+        private void LBX_PluginsList_MouseUp(object sender, MouseEventArgs e)
         {
-            #region RAM
-            ManagementObjectSearcher wmiObject = new("select * from Win32_OperatingSystem");
-
-            var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
+            if(e.Button == MouseButtons.Right)
             {
-                FreePhysicalMemory = double.Parse(mo["FreePhysicalMemory"].ToString()),
-                TotalVisibleMemorySize = double.Parse(mo["TotalVisibleMemorySize"].ToString())
-            }).FirstOrDefault();
+                int index = LBX_PluginsList.IndexFromPoint(e.Location);
 
-            if(memoryValues != null)
-            {
-                double percent = (memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize * 100;
-
-                TSL_RamState.Text = "RAM usage: " + Math.Round(percent).ToString() + "%";
+                if(index >= 0)
+                {
+                    LBX_PluginsList.SelectedItem = LBX_PluginsList.Items[index];
+                    CMS_PluginsList.Show(LBX_PluginsList, e.Location);
+                }
             }
-            #endregion
+        }
 
+        private void SMI_CheckPluiginUpdate_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("API is not implemented yet.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            LBX_PluginsList.SelectedIndex = -1;
+        }
 
-            #region CPU
+        private void SMI_EditPluiginConfig_Click(object sender, EventArgs e)
+        {
+            var pluginName = LBX_PluginsList.SelectedItem.ToString().Remove(LBX_PluginsList.SelectedItem.ToString().Length - 4, 4);
+            var directoryPathsList = Directory.GetDirectories(_path + @"\plugins");
 
-            #endregion
+            foreach ( var directory in directoryPathsList)
+            {
+                var directoryTmp = directory.Split('\\');
+                var directoryName = directoryTmp[directoryTmp.Length - 1];
+
+                string pattern = string.Join(".*", Regex.Escape(directoryName.ToLower()).ToCharArray());
+
+                if(Regex.IsMatch(pluginName.ToLower(), pattern))
+                {
+                    var process = new Process() { StartInfo = new ProcessStartInfo(directory + @"\config.yml") { UseShellExecute = true } };
+                    process.Start();
+                }
+            }
+        }
+
+        private async void UpdateRamState()
+        {
+            ManagementObjectSearcher wmiObject = new("select * from Win32_OperatingSystem");
+            
+            while (true)
+            {
+                var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
+                {
+                    FreePhysicalMemory = double.Parse(mo["FreePhysicalMemory"].ToString()),
+                    TotalVisibleMemorySize = double.Parse(mo["TotalVisibleMemorySize"].ToString())
+                }).FirstOrDefault();
+
+                if(memoryValues != null)
+                {
+                    double percent = (memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize * 100;
+
+                    TSL_RamState.Text = "RAM usage: " + Math.Round(percent).ToString() + "%";
+                }
+
+                await Task.Delay(1000);
+            }
+        }
+        private async void UpdateCpuState()
+        {
+            var c = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+
+            while(true)
+            {
+                TSL_CpuState.Text = $"CPU: {Math.Round(c.NextValue()).ToString()}%";
+                await Task.Delay(1000);
+            }
         }
     }
 }
