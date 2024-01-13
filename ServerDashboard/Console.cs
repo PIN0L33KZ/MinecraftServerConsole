@@ -1,11 +1,9 @@
 using Microsoft.VisualBasic;
 using System.Diagnostics;
-using System.IO;
 using System.Management;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
-using Timer = System.Windows.Forms.Timer;
 
 namespace ServerDashboard
 {
@@ -30,9 +28,9 @@ namespace ServerDashboard
 
             TSL_Directory.Text = "Directory: " + _path;
 
-            var updateRamState = Task.Run(new Action(UpdateRamState));
+            Task updateRamState = Task.Run(new Action(UpdateRamState));
 
-            var updateCpuState = Task.Run(new Action(UpdateCpuState));
+            Task updateCpuState = Task.Run(new Action(UpdateCpuState));
         }
 
         private async void BTN_StartServer_Click(object sender, EventArgs e)
@@ -249,8 +247,8 @@ namespace ServerDashboard
             string[] pluginFiles = Directory.GetFiles(_path + @"\plugins", "*.jar");
             foreach(string file in pluginFiles)
             {
-                var fileSplit = file.Split('\\');
-                LBX_PluginsList.Items.Add(fileSplit[fileSplit.Length - 1]);
+                string[] fileSplit = file.Split('\\');
+                _ = LBX_PluginsList.Items.Add(fileSplit[^1]);
             }
 
             LBL_PluginsList.Text = $"Plugins ({pluginFiles.Length}): ";
@@ -339,26 +337,26 @@ namespace ServerDashboard
 
         private void SMI_CheckPluiginUpdate_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("API is not implemented yet.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            _ = MessageBox.Show("API is not implemented yet.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             LBX_PluginsList.SelectedIndex = -1;
         }
 
         private void SMI_EditPluiginConfig_Click(object sender, EventArgs e)
         {
-            var pluginName = LBX_PluginsList.SelectedItem.ToString().Remove(LBX_PluginsList.SelectedItem.ToString().Length - 4, 4);
-            var directoryPathsList = Directory.GetDirectories(_path + @"\plugins");
+            string pluginName = LBX_PluginsList.SelectedItem.ToString().Remove(LBX_PluginsList.SelectedItem.ToString().Length - 4, 4);
+            string[] directoryPathsList = Directory.GetDirectories(_path + @"\plugins");
 
-            foreach ( var directory in directoryPathsList)
+            foreach(string directory in directoryPathsList)
             {
-                var directoryTmp = directory.Split('\\');
-                var directoryName = directoryTmp[directoryTmp.Length - 1];
+                string[] directoryTmp = directory.Split('\\');
+                string directoryName = directoryTmp[^1];
 
                 string pattern = string.Join(".*", Regex.Escape(directoryName.ToLower()).ToCharArray());
 
                 if(Regex.IsMatch(pluginName.ToLower(), pattern))
                 {
-                    var process = new Process() { StartInfo = new ProcessStartInfo(directory + @"\config.yml") { UseShellExecute = true } };
-                    process.Start();
+                    Process process = new() { StartInfo = new ProcessStartInfo(directory + @"\config.yml") { UseShellExecute = true } };
+                    _ = process.Start();
                 }
             }
         }
@@ -366,8 +364,8 @@ namespace ServerDashboard
         private async void UpdateRamState()
         {
             ManagementObjectSearcher wmiObject = new("select * from Win32_OperatingSystem");
-            
-            while (true)
+
+            while(true)
             {
                 var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
                 {
@@ -387,11 +385,11 @@ namespace ServerDashboard
         }
         private async void UpdateCpuState()
         {
-            var c = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            PerformanceCounter c = new("Processor", "% Processor Time", "_Total");
 
             while(true)
             {
-                TSL_CpuState.Text = $"CPU: {Math.Round(c.NextValue()).ToString()}%";
+                TSL_CpuState.Text = $"CPU: {Math.Round(c.NextValue())}%";
                 await Task.Delay(1000);
             }
         }
