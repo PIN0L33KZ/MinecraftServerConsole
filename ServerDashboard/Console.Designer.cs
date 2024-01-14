@@ -134,9 +134,9 @@
             // 
             PNL_Fill.Controls.Add(RTB_ConsoleLog);
             PNL_Fill.Dock = DockStyle.Fill;
-            PNL_Fill.Location = new Point(0, 0);
+            PNL_Fill.Location = new Point(0, 58);
             PNL_Fill.Name = "PNL_Fill";
-            PNL_Fill.Size = new Size(1298, 500);
+            PNL_Fill.Size = new Size(992, 442);
             PNL_Fill.TabIndex = 1;
             // 
             // RTB_ConsoleLog
@@ -149,7 +149,7 @@
             RTB_ConsoleLog.Location = new Point(0, 0);
             RTB_ConsoleLog.Name = "RTB_ConsoleLog";
             RTB_ConsoleLog.ReadOnly = true;
-            RTB_ConsoleLog.Size = new Size(1298, 500);
+            RTB_ConsoleLog.Size = new Size(992, 442);
             RTB_ConsoleLog.TabIndex = 0;
             RTB_ConsoleLog.TabStop = false;
             RTB_ConsoleLog.Text = "";
@@ -401,10 +401,10 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1298, 565);
+            Controls.Add(PNL_Fill);
             Controls.Add(PNL_UpperSpaceing);
             Controls.Add(PNL_PlayerList);
             Controls.Add(PNL_PluginsList);
-            Controls.Add(PNL_Fill);
             Controls.Add(PNL_LowerSpaceing);
             Controls.Add(STS_Status);
             Icon = (Icon)resources.GetObject("$this.Icon");

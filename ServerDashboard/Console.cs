@@ -109,6 +109,9 @@ namespace ServerDashboard
 
                 if(e.Data.Contains("Starting Minecraft server on"))
                 {
+                    if(e.Data.Contains('<') || e.Data.Contains('>'))
+                        return;
+
                     string[] port = e.Data.Split(':');
 
                     TSL_ServerPort.Text = "Port: " + port[4];
@@ -116,6 +119,9 @@ namespace ServerDashboard
 
                 if(e.Data.Contains("Done"))
                 {
+                    if(e.Data.Contains('<') || e.Data.Contains('>'))
+                        return;
+
                     _ = BTN_StopServer.BeginInvoke(new Action(() => { BTN_StopServer.Enabled = true; }));
                     _ = BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = true; }));
                     _ = TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = true; _ = TBX_Command.Focus(); }));
@@ -123,6 +129,9 @@ namespace ServerDashboard
 
                 if(e.Data.Contains("Stopping the server"))
                 {
+                    if(e.Data.Contains('<') || e.Data.Contains('>'))
+                        return;
+
                     _ = BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = false; }));
                     _ = TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = false; TBX_Command.Clear(); }));
                 }
@@ -130,6 +139,9 @@ namespace ServerDashboard
                 if(e.Data.Contains("joined the game"))
                 {
                     string[] tmpString = e.Data.Split(" ");
+                    if(tmpString[2].Contains('<') || tmpString[2].Contains('>'))
+                        return;
+
                     _players.Add(tmpString[2]);
 
                     _ = LBX_PlayerList.BeginInvoke(new Action(LBX_PlayerList.Items.Clear));
@@ -143,6 +155,9 @@ namespace ServerDashboard
                 if(e.Data.Contains("left the game"))
                 {
                     string[] tmpString = e.Data.Split(" ");
+                    if(tmpString[2].Contains('<') || tmpString[2].Contains('>'))
+                        return;
+
                     _ = _players.Remove(tmpString[2]);
 
                     _ = LBX_PlayerList.BeginInvoke(new Action(LBX_PlayerList.Items.Clear));
@@ -277,6 +292,9 @@ namespace ServerDashboard
 
             string reason = Interaction.InputBox("Enter reason:", "Kick reason", "Kicked by an operator.");
 
+            if(reason.Length == 0)
+                return;
+
             foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
             {
                 _process.StandardInput.WriteLine($"kick {selectedPlayer} {reason}");
@@ -293,6 +311,9 @@ namespace ServerDashboard
             }
 
             string reason = Interaction.InputBox("Enter reason:", "Ban reason", "Banned by an operator.");
+
+            if(reason.Length == 0)
+                return;
 
             foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
             {
