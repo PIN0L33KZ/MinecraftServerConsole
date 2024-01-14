@@ -165,7 +165,7 @@ namespace ServerDashboard
                     {
                         _ = LBX_PlayerList.BeginInvoke(new Action(() => { _ = LBX_PlayerList.Items.Add(player); }));
                     }
-                    _ = LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
+                    _ = GBX_PlayersList.BeginInvoke(new Action(() => { GBX_PlayersList.Text = $"Players ({_players.Count}):"; }));
                 }
 
                 if(e.Data.Contains("left the game"))
@@ -183,7 +183,7 @@ namespace ServerDashboard
                     {
                         _ = LBX_PlayerList.BeginInvoke(new Action(() => { _ = LBX_PlayerList.Items.Add(player); }));
                     }
-                    _ = LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
+                    _ = GBX_PlayersList.BeginInvoke(new Action(() => { GBX_PlayersList.Text = $"Players ({_players.Count}):"; }));
                 }
 
                 _ = e.Data.ToLower().Contains("warn") || e.Data.ToLower().Contains("warning")
@@ -331,7 +331,7 @@ namespace ServerDashboard
                 _ = LBX_PluginsList.Items.Add(fileSplit[^1]);
             }
 
-            LBL_PluginsList.Text = $"Plugins ({pluginFiles.Length}): ";
+            GBX_PluginsList.Text = $"Plugins ({pluginFiles.Length}): ";
         }
 
         private void LBX_PlayerList_MouseUp(object sender, MouseEventArgs e)
@@ -602,6 +602,12 @@ namespace ServerDashboard
                 LBX_PlayerList.SelectedIndex = -1;
                 LBX_PluginsList.SelectedIndex = -1;
             }
+        }
+
+        private void Console_SizeChanged(object sender, EventArgs e)
+        {
+            if(this.WindowState == FormWindowState.Normal || this.WindowState == FormWindowState.Maximized)
+                SPC_Main.Panel1MinSize = this.Width - 298;
         }
     }
 }

@@ -55,32 +55,37 @@
             BTN_SendCommand = new Button();
             PNL_PlayerList = new Panel();
             LBX_PlayerList = new ListBox();
-            LBL_PlayerList = new Label();
             CMS_PlayerList = new ContextMenuStrip(components);
             SMI_KickPlayer = new ToolStripMenuItem();
             SMI_BanPlayer = new ToolStripMenuItem();
             SMI_OpPlayer = new ToolStripMenuItem();
             toolStripMenuItem1 = new ToolStripSeparator();
             SMI_MessagePlayer = new ToolStripMenuItem();
-            PNL_PluginsList = new Panel();
-            LBX_PluginsList = new ListBox();
-            LBL_PluginsList = new Label();
-            CMS_PluginsList = new ContextMenuStrip(components);
-            SMI_EditPluiginConfig = new ToolStripMenuItem();
-            SMI_CheckPluiginUpdate = new ToolStripMenuItem();
             SMI_SetGamemodePlayer = new ToolStripMenuItem();
             SMI_SetCreative = new ToolStripMenuItem();
             SMI_SetSurvival = new ToolStripMenuItem();
             SMI_SetAdventure = new ToolStripMenuItem();
             SMI_SetSpectator = new ToolStripMenuItem();
+            PNL_PluginsList = new Panel();
+            CMS_PluginsList = new ContextMenuStrip(components);
+            SMI_EditPluiginConfig = new ToolStripMenuItem();
+            SMI_CheckPluiginUpdate = new ToolStripMenuItem();
+            SPC_Main = new SplitContainer();
+            GBX_PluginsList = new GroupBox();
+            LBX_PluginsList = new ListBox();
+            GBX_PlayersList = new GroupBox();
             PNL_UpperSpaceing.SuspendLayout();
             PNL_Fill.SuspendLayout();
             STS_Status.SuspendLayout();
             PNL_LowerSpaceing.SuspendLayout();
-            PNL_PlayerList.SuspendLayout();
             CMS_PlayerList.SuspendLayout();
-            PNL_PluginsList.SuspendLayout();
             CMS_PluginsList.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)SPC_Main).BeginInit();
+            SPC_Main.Panel1.SuspendLayout();
+            SPC_Main.Panel2.SuspendLayout();
+            SPC_Main.SuspendLayout();
+            GBX_PluginsList.SuspendLayout();
+            GBX_PlayersList.SuspendLayout();
             SuspendLayout();
             // 
             // PNL_UpperSpaceing
@@ -92,17 +97,17 @@
             PNL_UpperSpaceing.Dock = DockStyle.Top;
             PNL_UpperSpaceing.Location = new Point(0, 0);
             PNL_UpperSpaceing.Name = "PNL_UpperSpaceing";
-            PNL_UpperSpaceing.Size = new Size(992, 58);
+            PNL_UpperSpaceing.Size = new Size(1000, 58);
             PNL_UpperSpaceing.TabIndex = 0;
             // 
             // BTN_AgreeToEula
             // 
-            BTN_AgreeToEula.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            BTN_AgreeToEula.Anchor = AnchorStyles.Right;
             BTN_AgreeToEula.AutoEllipsis = true;
             BTN_AgreeToEula.BackColor = Color.White;
             BTN_AgreeToEula.Enabled = false;
             BTN_AgreeToEula.Font = new Font("Segoe UI", 9F);
-            BTN_AgreeToEula.Location = new Point(864, 18);
+            BTN_AgreeToEula.Location = new Point(854, 18);
             BTN_AgreeToEula.Name = "BTN_AgreeToEula";
             BTN_AgreeToEula.Size = new Size(119, 23);
             BTN_AgreeToEula.TabIndex = 2;
@@ -117,7 +122,7 @@
             BTN_StopServer.BackColor = Color.White;
             BTN_StopServer.Enabled = false;
             BTN_StopServer.Font = new Font("Segoe UI", 9F);
-            BTN_StopServer.Location = new Point(501, 18);
+            BTN_StopServer.Location = new Point(496, 18);
             BTN_StopServer.Name = "BTN_StopServer";
             BTN_StopServer.Size = new Size(75, 23);
             BTN_StopServer.TabIndex = 1;
@@ -131,7 +136,7 @@
             BTN_StartServer.AutoEllipsis = true;
             BTN_StartServer.BackColor = Color.White;
             BTN_StartServer.Font = new Font("Segoe UI", 9F);
-            BTN_StartServer.Location = new Point(420, 18);
+            BTN_StartServer.Location = new Point(415, 18);
             BTN_StartServer.Name = "BTN_StartServer";
             BTN_StartServer.Size = new Size(75, 23);
             BTN_StartServer.TabIndex = 0;
@@ -145,7 +150,7 @@
             PNL_Fill.Dock = DockStyle.Fill;
             PNL_Fill.Location = new Point(0, 58);
             PNL_Fill.Name = "PNL_Fill";
-            PNL_Fill.Size = new Size(992, 442);
+            PNL_Fill.Size = new Size(1000, 502);
             PNL_Fill.TabIndex = 1;
             // 
             // RTB_ConsoleLog
@@ -158,7 +163,7 @@
             RTB_ConsoleLog.Location = new Point(0, 0);
             RTB_ConsoleLog.Name = "RTB_ConsoleLog";
             RTB_ConsoleLog.ReadOnly = true;
-            RTB_ConsoleLog.Size = new Size(992, 442);
+            RTB_ConsoleLog.Size = new Size(1000, 502);
             RTB_ConsoleLog.TabIndex = 0;
             RTB_ConsoleLog.TabStop = false;
             RTB_ConsoleLog.Text = "";
@@ -169,7 +174,7 @@
             STS_Status.BackColor = SystemColors.ControlLight;
             STS_Status.Font = new Font("Segoe UI", 9F);
             STS_Status.Items.AddRange(new ToolStripItem[] { TSL_Status, TSL_Spacing1, TSL_IP, TSL_Spacing2, TSL_ServerPort, TSL_Spacing3, TSL_Directory, TSL_Spacing4, TSL_RamState, TSL_Spacing5, TSL_CpuState, TSL_Spacing6, TSL_PingState });
-            STS_Status.Location = new Point(0, 543);
+            STS_Status.Location = new Point(0, 603);
             STS_Status.Name = "STS_Status";
             STS_Status.Size = new Size(1298, 22);
             STS_Status.TabIndex = 2;
@@ -264,9 +269,9 @@
             PNL_LowerSpaceing.Controls.Add(TBX_Command);
             PNL_LowerSpaceing.Controls.Add(BTN_SendCommand);
             PNL_LowerSpaceing.Dock = DockStyle.Bottom;
-            PNL_LowerSpaceing.Location = new Point(0, 500);
+            PNL_LowerSpaceing.Location = new Point(0, 560);
             PNL_LowerSpaceing.Name = "PNL_LowerSpaceing";
-            PNL_LowerSpaceing.Size = new Size(1298, 43);
+            PNL_LowerSpaceing.Size = new Size(1000, 43);
             PNL_LowerSpaceing.TabIndex = 3;
             // 
             // TBX_Command
@@ -281,7 +286,7 @@
             TBX_Command.ForeColor = SystemColors.ControlText;
             TBX_Command.Location = new Point(12, 10);
             TBX_Command.Name = "TBX_Command";
-            TBX_Command.Size = new Size(1201, 23);
+            TBX_Command.Size = new Size(885, 23);
             TBX_Command.TabIndex = 0;
             TBX_Command.WordWrap = false;
             TBX_Command.KeyDown += TBX_Command_KeyDown;
@@ -293,7 +298,7 @@
             BTN_SendCommand.BackColor = Color.White;
             BTN_SendCommand.Enabled = false;
             BTN_SendCommand.Font = new Font("Segoe UI", 9F);
-            BTN_SendCommand.Location = new Point(1219, 10);
+            BTN_SendCommand.Location = new Point(903, 10);
             BTN_SendCommand.Name = "BTN_SendCommand";
             BTN_SendCommand.Size = new Size(75, 23);
             BTN_SendCommand.TabIndex = 1;
@@ -303,45 +308,36 @@
             // 
             // PNL_PlayerList
             // 
-            PNL_PlayerList.Controls.Add(LBX_PlayerList);
-            PNL_PlayerList.Controls.Add(LBL_PlayerList);
-            PNL_PlayerList.Dock = DockStyle.Right;
-            PNL_PlayerList.Location = new Point(992, 0);
+            PNL_PlayerList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            PNL_PlayerList.AutoSize = true;
+            PNL_PlayerList.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            PNL_PlayerList.Location = new Point(2, 0);
             PNL_PlayerList.Name = "PNL_PlayerList";
-            PNL_PlayerList.Size = new Size(153, 500);
+            PNL_PlayerList.Size = new Size(0, 0);
             PNL_PlayerList.TabIndex = 4;
             // 
             // LBX_PlayerList
             // 
-            LBX_PlayerList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             LBX_PlayerList.BackColor = SystemColors.Control;
             LBX_PlayerList.BorderStyle = BorderStyle.None;
+            LBX_PlayerList.Dock = DockStyle.Fill;
             LBX_PlayerList.FormattingEnabled = true;
             LBX_PlayerList.HorizontalScrollbar = true;
             LBX_PlayerList.ItemHeight = 15;
-            LBX_PlayerList.Location = new Point(0, 33);
+            LBX_PlayerList.Location = new Point(3, 19);
             LBX_PlayerList.Name = "LBX_PlayerList";
-            LBX_PlayerList.Size = new Size(153, 465);
+            LBX_PlayerList.Size = new Size(273, 261);
             LBX_PlayerList.Sorted = true;
             LBX_PlayerList.TabIndex = 1;
             LBX_PlayerList.UseTabStops = false;
             LBX_PlayerList.MouseUp += LBX_PlayerList_MouseUp;
-            // 
-            // LBL_PlayerList
-            // 
-            LBL_PlayerList.AutoSize = true;
-            LBL_PlayerList.Location = new Point(6, 9);
-            LBL_PlayerList.Name = "LBL_PlayerList";
-            LBL_PlayerList.Size = new Size(64, 15);
-            LBL_PlayerList.TabIndex = 0;
-            LBL_PlayerList.Text = "Players (0):";
             // 
             // CMS_PlayerList
             // 
             CMS_PlayerList.Items.AddRange(new ToolStripItem[] { SMI_KickPlayer, SMI_BanPlayer, SMI_OpPlayer, toolStripMenuItem1, SMI_MessagePlayer, SMI_SetGamemodePlayer });
             CMS_PlayerList.Name = "CMS_PlayerList";
             CMS_PlayerList.RenderMode = ToolStripRenderMode.System;
-            CMS_PlayerList.Size = new Size(208, 142);
+            CMS_PlayerList.Size = new Size(208, 120);
             // 
             // SMI_KickPlayer
             // 
@@ -376,40 +372,50 @@
             SMI_MessagePlayer.Text = "Message player";
             SMI_MessagePlayer.Click += SMI_MsgPlayer_Click;
             // 
+            // SMI_SetGamemodePlayer
+            // 
+            SMI_SetGamemodePlayer.DropDownItems.AddRange(new ToolStripItem[] { SMI_SetCreative, SMI_SetSurvival, SMI_SetAdventure, SMI_SetSpectator });
+            SMI_SetGamemodePlayer.Name = "SMI_SetGamemodePlayer";
+            SMI_SetGamemodePlayer.Size = new Size(207, 22);
+            SMI_SetGamemodePlayer.Text = "Set gamemode for player";
+            // 
+            // SMI_SetCreative
+            // 
+            SMI_SetCreative.Name = "SMI_SetCreative";
+            SMI_SetCreative.Size = new Size(129, 22);
+            SMI_SetCreative.Text = "Creative";
+            SMI_SetCreative.Click += SMI_SetCreative_Click;
+            // 
+            // SMI_SetSurvival
+            // 
+            SMI_SetSurvival.Name = "SMI_SetSurvival";
+            SMI_SetSurvival.Size = new Size(129, 22);
+            SMI_SetSurvival.Text = "Survival";
+            SMI_SetSurvival.Click += SMI_SetSurvival_Click;
+            // 
+            // SMI_SetAdventure
+            // 
+            SMI_SetAdventure.Name = "SMI_SetAdventure";
+            SMI_SetAdventure.Size = new Size(129, 22);
+            SMI_SetAdventure.Text = "Adventure";
+            SMI_SetAdventure.Click += SMI_SetAdventure_Click;
+            // 
+            // SMI_SetSpectator
+            // 
+            SMI_SetSpectator.Name = "SMI_SetSpectator";
+            SMI_SetSpectator.Size = new Size(129, 22);
+            SMI_SetSpectator.Text = "Spectator";
+            SMI_SetSpectator.Click += SMI_SetSpectator_Click;
+            // 
             // PNL_PluginsList
             // 
-            PNL_PluginsList.Controls.Add(LBX_PluginsList);
-            PNL_PluginsList.Controls.Add(LBL_PluginsList);
-            PNL_PluginsList.Dock = DockStyle.Right;
-            PNL_PluginsList.Location = new Point(1145, 0);
+            PNL_PluginsList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            PNL_PluginsList.AutoSize = true;
+            PNL_PluginsList.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            PNL_PluginsList.Location = new Point(204, 33);
             PNL_PluginsList.Name = "PNL_PluginsList";
-            PNL_PluginsList.Size = new Size(153, 500);
+            PNL_PluginsList.Size = new Size(0, 0);
             PNL_PluginsList.TabIndex = 5;
-            // 
-            // LBX_PluginsList
-            // 
-            LBX_PluginsList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            LBX_PluginsList.BackColor = SystemColors.Control;
-            LBX_PluginsList.BorderStyle = BorderStyle.None;
-            LBX_PluginsList.FormattingEnabled = true;
-            LBX_PluginsList.HorizontalScrollbar = true;
-            LBX_PluginsList.ItemHeight = 15;
-            LBX_PluginsList.Location = new Point(0, 33);
-            LBX_PluginsList.Name = "LBX_PluginsList";
-            LBX_PluginsList.Size = new Size(153, 465);
-            LBX_PluginsList.Sorted = true;
-            LBX_PluginsList.TabIndex = 1;
-            LBX_PluginsList.UseTabStops = false;
-            LBX_PluginsList.MouseUp += LBX_PluginsList_MouseUp;
-            // 
-            // LBL_PluginsList
-            // 
-            LBL_PluginsList.AutoSize = true;
-            LBL_PluginsList.Location = new Point(6, 9);
-            LBL_PluginsList.Name = "LBL_PluginsList";
-            LBL_PluginsList.Size = new Size(66, 15);
-            LBL_PluginsList.TabIndex = 0;
-            LBL_PluginsList.Text = "Plugins (0):";
             // 
             // CMS_PluginsList
             // 
@@ -432,59 +438,84 @@
             SMI_CheckPluiginUpdate.Text = "Check for updates";
             SMI_CheckPluiginUpdate.Click += SMI_CheckPluiginUpdate_Click;
             // 
-            // SMI_SetGamemodePlayer
+            // SPC_Main
             // 
-            SMI_SetGamemodePlayer.DropDownItems.AddRange(new ToolStripItem[] { SMI_SetCreative, SMI_SetSurvival, SMI_SetAdventure, SMI_SetSpectator });
-            SMI_SetGamemodePlayer.Name = "SMI_SetGamemodePlayer";
-            SMI_SetGamemodePlayer.Size = new Size(207, 22);
-            SMI_SetGamemodePlayer.Text = "Set gamemode for player";
+            SPC_Main.Dock = DockStyle.Fill;
+            SPC_Main.Location = new Point(0, 0);
+            SPC_Main.Name = "SPC_Main";
             // 
-            // SMI_SetCreative
+            // SPC_Main.Panel1
             // 
-            SMI_SetCreative.Name = "SMI_SetCreative";
-            SMI_SetCreative.Size = new Size(180, 22);
-            SMI_SetCreative.Text = "Creative";
-            SMI_SetCreative.Click += SMI_SetCreative_Click;
+            SPC_Main.Panel1.Controls.Add(PNL_Fill);
+            SPC_Main.Panel1.Controls.Add(PNL_UpperSpaceing);
+            SPC_Main.Panel1.Controls.Add(PNL_LowerSpaceing);
+            SPC_Main.Panel1MinSize = 1000;
             // 
-            // SMI_SetSurvival
+            // SPC_Main.Panel2
             // 
-            SMI_SetSurvival.Name = "SMI_SetSurvival";
-            SMI_SetSurvival.Size = new Size(180, 22);
-            SMI_SetSurvival.Text = "Survival";
-            SMI_SetSurvival.Click += SMI_SetSurvival_Click;
+            SPC_Main.Panel2.AutoScroll = true;
+            SPC_Main.Panel2.Controls.Add(GBX_PluginsList);
+            SPC_Main.Panel2.Controls.Add(GBX_PlayersList);
+            SPC_Main.Panel2.Controls.Add(PNL_PlayerList);
+            SPC_Main.Panel2.Controls.Add(PNL_PluginsList);
+            SPC_Main.Panel2MinSize = 0;
+            SPC_Main.Size = new Size(1298, 603);
+            SPC_Main.SplitterDistance = 1000;
+            SPC_Main.TabIndex = 6;
             // 
-            // SMI_SetAdventure
+            // GBX_PluginsList
             // 
-            SMI_SetAdventure.Name = "SMI_SetAdventure";
-            SMI_SetAdventure.Size = new Size(180, 22);
-            SMI_SetAdventure.Text = "Adventure";
-            SMI_SetAdventure.Click += SMI_SetAdventure_Click;
+            GBX_PluginsList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            GBX_PluginsList.Controls.Add(LBX_PluginsList);
+            GBX_PluginsList.Location = new Point(9, 289);
+            GBX_PluginsList.Name = "GBX_PluginsList";
+            GBX_PluginsList.Size = new Size(276, 304);
+            GBX_PluginsList.TabIndex = 7;
+            GBX_PluginsList.TabStop = false;
+            GBX_PluginsList.Text = "Plugins (0):";
             // 
-            // SMI_SetSpectator
+            // LBX_PluginsList
             // 
-            SMI_SetSpectator.Name = "SMI_SetSpectator";
-            SMI_SetSpectator.Size = new Size(180, 22);
-            SMI_SetSpectator.Text = "Spectator";
-            SMI_SetSpectator.Click += SMI_SetSpectator_Click;
+            LBX_PluginsList.BackColor = SystemColors.Control;
+            LBX_PluginsList.BorderStyle = BorderStyle.None;
+            LBX_PluginsList.Dock = DockStyle.Fill;
+            LBX_PluginsList.FormattingEnabled = true;
+            LBX_PluginsList.HorizontalScrollbar = true;
+            LBX_PluginsList.ItemHeight = 15;
+            LBX_PluginsList.Location = new Point(3, 19);
+            LBX_PluginsList.Name = "LBX_PluginsList";
+            LBX_PluginsList.Size = new Size(270, 282);
+            LBX_PluginsList.Sorted = true;
+            LBX_PluginsList.TabIndex = 1;
+            LBX_PluginsList.UseTabStops = false;
+            LBX_PluginsList.MouseUp += LBX_PluginsList_MouseUp;
+            // 
+            // GBX_PlayersList
+            // 
+            GBX_PlayersList.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            GBX_PlayersList.Controls.Add(LBX_PlayerList);
+            GBX_PlayersList.Location = new Point(8, 3);
+            GBX_PlayersList.Name = "GBX_PlayersList";
+            GBX_PlayersList.Size = new Size(279, 283);
+            GBX_PlayersList.TabIndex = 6;
+            GBX_PlayersList.TabStop = false;
+            GBX_PlayersList.Text = "Players (0):";
             // 
             // Console
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1298, 565);
-            Controls.Add(PNL_Fill);
-            Controls.Add(PNL_UpperSpaceing);
-            Controls.Add(PNL_PlayerList);
-            Controls.Add(PNL_PluginsList);
-            Controls.Add(PNL_LowerSpaceing);
+            ClientSize = new Size(1298, 625);
+            Controls.Add(SPC_Main);
             Controls.Add(STS_Status);
             DoubleBuffered = true;
             Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
-            MinimumSize = new Size(758, 549);
+            MinimumSize = new Size(956, 664);
             Name = "Console";
             Text = "Console";
             FormClosing += Console_FormClosing;
+            SizeChanged += Console_SizeChanged;
             KeyDown += Console_KeyDown;
             PNL_UpperSpaceing.ResumeLayout(false);
             PNL_Fill.ResumeLayout(false);
@@ -492,12 +523,15 @@
             STS_Status.PerformLayout();
             PNL_LowerSpaceing.ResumeLayout(false);
             PNL_LowerSpaceing.PerformLayout();
-            PNL_PlayerList.ResumeLayout(false);
-            PNL_PlayerList.PerformLayout();
             CMS_PlayerList.ResumeLayout(false);
-            PNL_PluginsList.ResumeLayout(false);
-            PNL_PluginsList.PerformLayout();
             CMS_PluginsList.ResumeLayout(false);
+            SPC_Main.Panel1.ResumeLayout(false);
+            SPC_Main.Panel2.ResumeLayout(false);
+            SPC_Main.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)SPC_Main).EndInit();
+            SPC_Main.ResumeLayout(false);
+            GBX_PluginsList.ResumeLayout(false);
+            GBX_PlayersList.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -522,7 +556,6 @@
         private ToolStripStatusLabel TSL_Spacing3;
         private ToolStripStatusLabel TSL_Directory;
         private Panel PNL_PlayerList;
-        private Label LBL_PlayerList;
         private ListBox LBX_PlayerList;
         private ContextMenuStrip CMS_PlayerList;
         private ToolStripMenuItem SMI_KickPlayer;
@@ -533,8 +566,6 @@
         private ToolStripStatusLabel TSL_Spacing5;
         private ToolStripStatusLabel TSL_CpuState;
         private Panel PNL_PluginsList;
-        private ListBox LBX_PluginsList;
-        private Label LBL_PluginsList;
         private ContextMenuStrip CMS_PluginsList;
         private ToolStripMenuItem SMI_EditPluiginConfig;
         private ToolStripMenuItem SMI_CheckPluiginUpdate;
@@ -547,5 +578,9 @@
         private ToolStripMenuItem SMI_SetSurvival;
         private ToolStripMenuItem SMI_SetAdventure;
         private ToolStripMenuItem SMI_SetSpectator;
+        private SplitContainer SPC_Main;
+        private ListBox LBX_PluginsList;
+        private GroupBox GBX_PlayersList;
+        private GroupBox GBX_PluginsList;
     }
 }
