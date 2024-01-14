@@ -274,6 +274,11 @@ namespace ServerDashboard
                 return;
             }
 
+            if(TBX_Command.Text[0] == '/')
+            {
+                TBX_Command.Text = TBX_Command.Text.Remove(0, 1);
+            }
+
             RTB_ConsoleLog.SelectionStart = RTB_ConsoleLog.TextLength;
             RTB_ConsoleLog.SelectionLength = 0;
             RTB_ConsoleLog.SelectionColor = Color.FromArgb(37, 93, 213);
@@ -310,12 +315,16 @@ namespace ServerDashboard
                     return;
                 }
 
+                Cursor = Cursors.WaitCursor;
+
                 // Download latest .jar file from serverjars.com
                 WebClient webClient = new();
                 await Task.Run(new Action(() => { webClient.DownloadFile(@"https://serverjars.com/api/fetchJar/servers/purpur/", _path + @"\server.jar"); }));
                 _jarFile = @"server.jar";
 
                 _ = MessageBox.Show(".jar file was downloaded successfully! You can start your server now.", "Download server.jar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                Cursor = Cursors.Default;
             }
             else
             {
@@ -324,6 +333,11 @@ namespace ServerDashboard
             }
 
             LBX_PluginsList.Items.Clear();
+            if(!Directory.Exists(_path + @"\plugins"))
+            {
+                return;
+            }
+
             string[] pluginFiles = Directory.GetFiles(_path + @"\plugins", "*.jar");
             foreach(string file in pluginFiles)
             {
@@ -606,8 +620,10 @@ namespace ServerDashboard
 
         private void Console_SizeChanged(object sender, EventArgs e)
         {
-            if(this.WindowState == FormWindowState.Normal || this.WindowState == FormWindowState.Maximized)
-                SPC_Main.Panel1MinSize = this.Width - 298;
+            if(WindowState is FormWindowState.Normal or FormWindowState.Maximized)
+            {
+                SPC_Main.Panel1MinSize = Width - 298;
+            }
         }
     }
 }
