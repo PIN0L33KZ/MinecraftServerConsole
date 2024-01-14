@@ -90,6 +90,7 @@ namespace ServerDashboard
                 TSL_Status.Image = Properties.Resources.red_circle;
                 TSL_ServerPort.Text = "";
                 TSL_Spacing2.Text = "";
+                TSL_DefaultGamemode.Text = "";
                 _players.Clear();
             });
 
@@ -120,6 +121,17 @@ namespace ServerDashboard
 
                     TSL_ServerPort.Text = "Port: " + port[4];
                     TSL_Spacing2.Text = "     ";
+                }
+
+                if(e.Data.Contains("Default game type: "))
+                {
+                    if(e.Data.Contains('<') || e.Data.Contains('>'))
+                    {
+                        return;
+                    }
+
+                    var gamemodeSplit = e.Data.Split(':');
+                    _ = this.BeginInvoke(new Action(() => { TSL_DefaultGamemode.Text = $"Default gamemode: {CorrectCasing(gamemodeSplit[gamemodeSplit.Length - 1].Trim())}"; }));
                 }
 
                 if(e.Data.Contains("Done"))
@@ -624,6 +636,26 @@ namespace ServerDashboard
             {
                 SPC_Main.Panel1MinSize = Width - 298;
             }
+        }
+
+        private void TSI_ExportLogToFile_Clicked(object sender, EventArgs e)
+        {
+            if(RTB_ConsoleLog.TextLength == 0)
+                return;
+
+            var sFD = new SaveFileDialog() { Filter = @"Text Document (*.txt)|*.txt|Log File (*.log)|*.log", Title = "Save console log." };
+
+            if(sFD.ShowDialog() != DialogResult.OK)
+                return;
+
+            File.WriteAllText(sFD.FileName, RTB_ConsoleLog.Text.Trim());
+
+            MessageBox.Show("Console log saved successfully!", "Save console log", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private string CorrectCasing(string str)
+        {
+            return str[0].ToString().ToUpper() + str.Remove(0, 1).ToLower();
         }
     }
 }

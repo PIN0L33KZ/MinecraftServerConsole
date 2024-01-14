@@ -36,6 +36,8 @@
             BTN_StartServer = new Button();
             PNL_Fill = new Panel();
             RTB_ConsoleLog = new RichTextBox();
+            CMS_ConsoleLog = new ContextMenuStrip(components);
+            TSI_ExportLogToFile = new ToolStripMenuItem();
             STS_Status = new StatusStrip();
             TSL_Status = new ToolStripStatusLabel();
             TSL_Spacing1 = new ToolStripStatusLabel();
@@ -50,6 +52,8 @@
             TSL_CpuState = new ToolStripStatusLabel();
             TSL_Spacing6 = new ToolStripStatusLabel();
             TSL_PingState = new ToolStripStatusLabel();
+            TSL_Spacing7 = new ToolStripStatusLabel();
+            TSL_DefaultGamemode = new ToolStripStatusLabel();
             PNL_LowerSpaceing = new Panel();
             TBX_Command = new TextBox();
             BTN_SendCommand = new Button();
@@ -76,6 +80,7 @@
             GBX_PlayersList = new GroupBox();
             PNL_UpperSpaceing.SuspendLayout();
             PNL_Fill.SuspendLayout();
+            CMS_ConsoleLog.SuspendLayout();
             STS_Status.SuspendLayout();
             PNL_LowerSpaceing.SuspendLayout();
             CMS_PlayerList.SuspendLayout();
@@ -156,7 +161,7 @@
             // RTB_ConsoleLog
             // 
             RTB_ConsoleLog.BackColor = Color.Black;
-            RTB_ConsoleLog.BorderStyle = BorderStyle.None;
+            RTB_ConsoleLog.ContextMenuStrip = CMS_ConsoleLog;
             RTB_ConsoleLog.Dock = DockStyle.Fill;
             RTB_ConsoleLog.Font = new Font("Consolas", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             RTB_ConsoleLog.ForeColor = Color.Silver;
@@ -169,11 +174,25 @@
             RTB_ConsoleLog.Text = "";
             RTB_ConsoleLog.WordWrap = false;
             // 
+            // CMS_ConsoleLog
+            // 
+            CMS_ConsoleLog.Items.AddRange(new ToolStripItem[] { TSI_ExportLogToFile });
+            CMS_ConsoleLog.Name = "CMS_ConsoleLog";
+            CMS_ConsoleLog.RenderMode = ToolStripRenderMode.System;
+            CMS_ConsoleLog.Size = new Size(162, 26);
+            // 
+            // TSI_ExportLogToFile
+            // 
+            TSI_ExportLogToFile.Name = "TSI_ExportLogToFile";
+            TSI_ExportLogToFile.Size = new Size(161, 22);
+            TSI_ExportLogToFile.Text = "Export log to file";
+            TSI_ExportLogToFile.Click += TSI_ExportLogToFile_Clicked;
+            // 
             // STS_Status
             // 
             STS_Status.BackColor = SystemColors.ControlLight;
             STS_Status.Font = new Font("Segoe UI", 9F);
-            STS_Status.Items.AddRange(new ToolStripItem[] { TSL_Status, TSL_Spacing1, TSL_IP, TSL_Spacing2, TSL_ServerPort, TSL_Spacing3, TSL_Directory, TSL_Spacing4, TSL_RamState, TSL_Spacing5, TSL_CpuState, TSL_Spacing6, TSL_PingState });
+            STS_Status.Items.AddRange(new ToolStripItem[] { TSL_Status, TSL_Spacing1, TSL_IP, TSL_Spacing2, TSL_ServerPort, TSL_Spacing3, TSL_Directory, TSL_Spacing4, TSL_RamState, TSL_Spacing5, TSL_CpuState, TSL_Spacing6, TSL_PingState, TSL_Spacing7, TSL_DefaultGamemode });
             STS_Status.Location = new Point(0, 603);
             STS_Status.Name = "STS_Status";
             STS_Status.Size = new Size(1298, 22);
@@ -262,6 +281,17 @@
             TSL_PingState.Name = "TSL_PingState";
             TSL_PingState.Size = new Size(59, 17);
             TSL_PingState.Text = "Ping: 0ms";
+            // 
+            // TSL_Spacing7
+            // 
+            TSL_Spacing7.Name = "TSL_Spacing7";
+            TSL_Spacing7.Size = new Size(22, 17);
+            TSL_Spacing7.Text = "     ";
+            // 
+            // TSL_DefaultGamemode
+            // 
+            TSL_DefaultGamemode.Name = "TSL_DefaultGamemode";
+            TSL_DefaultGamemode.Size = new Size(0, 17);
             // 
             // PNL_LowerSpaceing
             // 
@@ -519,6 +549,7 @@
             KeyDown += Console_KeyDown;
             PNL_UpperSpaceing.ResumeLayout(false);
             PNL_Fill.ResumeLayout(false);
+            CMS_ConsoleLog.ResumeLayout(false);
             STS_Status.ResumeLayout(false);
             STS_Status.PerformLayout();
             PNL_LowerSpaceing.ResumeLayout(false);
@@ -582,5 +613,9 @@
         private ListBox LBX_PluginsList;
         private GroupBox GBX_PlayersList;
         private GroupBox GBX_PluginsList;
+        private ContextMenuStrip CMS_ConsoleLog;
+        private ToolStripMenuItem TSI_ExportLogToFile;
+        private ToolStripStatusLabel TSL_Spacing7;
+        private ToolStripStatusLabel TSL_DefaultGamemode;
     }
 }
