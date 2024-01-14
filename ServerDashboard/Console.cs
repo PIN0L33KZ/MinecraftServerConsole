@@ -2,6 +2,7 @@ using Microsoft.VisualBasic;
 using System.Diagnostics;
 using System.Management;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
 
@@ -28,20 +29,25 @@ namespace ServerDashboard
 
             TSL_Directory.Text = "Directory: " + _path;
 
-            Task updateRamState = Task.Run(new Action(UpdateRamState));
+            Task updateRamState = Task.Run(new Action(UpdateRamState)); // Measure RAM usage in %
 
-            Task updateCpuState = Task.Run(new Action(UpdateCpuState));
+            Task updateCpuState = Task.Run(new Action(UpdateCpuState)); // Measure CPU usage in %
+
+            Task updatePingState = Task.Run(new Action(UpdatePingState)); // Measure Roundtrip time in ms
+
+            TBX_Command.AutoCompleteSource = AutoCompleteSource.CustomSource;
         }
 
         private async void BTN_StartServer_Click(object sender, EventArgs e)
         {
             if(_path == "Please select a directory by clicking this text.")
             {
-                RTB_ConsoleLog.AppendText("Please select a directory first!");
+                RTB_ConsoleLog.AppendText("ERROR: Please select a directory first!");
                 return;
             }
 
-            TSL_Status.Text = "Starting Server...";
+            TSL_Status.Text = "Server starting";
+            TSL_Status.Image = Properties.Resources.orange_circle;
             if(RTB_ConsoleLog.Text.Length > 0)
             {
                 RTB_ConsoleLog.Clear();
@@ -68,7 +74,6 @@ namespace ServerDashboard
 
                 // Start the process
                 _ = _process.Start();
-                TSL_Status.Text = "Server running...";
 
                 _players = [];
 
@@ -81,18 +86,22 @@ namespace ServerDashboard
 
                 // Close the process
                 _process.Close();
-                TSL_Status.Text = "Server stopped.";
+                TSL_Status.Text = "Server stopped";
+                TSL_Status.Image = Properties.Resources.red_circle;
                 TSL_ServerPort.Text = "";
+                TSL_Spacing2.Text = "";
                 _players.Clear();
             });
 
             BTN_StopServer.Enabled = false;
             BTN_StartServer.Enabled = true;
 
+            await Task.Run(new Action(async () => { await Task.Delay(5000); ResetState(); }));
+
             if(RTB_ConsoleLog.Text.Contains("You need to agree to the EULA"))
             {
                 BTN_AgreeToEula.Enabled = true;
-                TSL_Status.Text = "Error, EULA isn't agreed by user. Aborting.";
+                TSL_Status.Text = "Error: EULA isn't agreed by user, aborting";
             }
         }
 
@@ -100,37 +109,42 @@ namespace ServerDashboard
         {
             if(!string.IsNullOrEmpty(e.Data))
             {
-                // Use BeginInvoke to update the UI from the output data received event
-                _ = RTB_ConsoleLog.BeginInvoke(new Action(() =>
-                {
-                    RTB_ConsoleLog.AppendText($"{e.Data}{Environment.NewLine}");
-                    RTB_ConsoleLog.ScrollToCaret(); // Auto-scroll to the end
-                }));
-
                 if(e.Data.Contains("Starting Minecraft server on"))
                 {
                     if(e.Data.Contains('<') || e.Data.Contains('>'))
+                    {
                         return;
+                    }
 
                     string[] port = e.Data.Split(':');
 
                     TSL_ServerPort.Text = "Port: " + port[4];
+                    TSL_Spacing2.Text = "     ";
                 }
 
                 if(e.Data.Contains("Done"))
                 {
                     if(e.Data.Contains('<') || e.Data.Contains('>'))
+                    {
                         return;
+                    }
 
                     _ = BTN_StopServer.BeginInvoke(new Action(() => { BTN_StopServer.Enabled = true; }));
                     _ = BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = true; }));
                     _ = TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = true; _ = TBX_Command.Focus(); }));
+                    _ = BeginInvoke(new Action(() =>
+                    {
+                        TSL_Status.Text = "Server running";
+                        TSL_Status.Image = Properties.Resources.green_circle;
+                    }));
                 }
 
                 if(e.Data.Contains("Stopping the server"))
                 {
                     if(e.Data.Contains('<') || e.Data.Contains('>'))
+                    {
                         return;
+                    }
 
                     _ = BTN_SendCommand.BeginInvoke(new Action(() => { BTN_SendCommand.Enabled = false; }));
                     _ = TBX_Command.BeginInvoke(new Action(() => { TBX_Command.Enabled = false; TBX_Command.Clear(); }));
@@ -140,7 +154,9 @@ namespace ServerDashboard
                 {
                     string[] tmpString = e.Data.Split(" ");
                     if(tmpString[2].Contains('<') || tmpString[2].Contains('>'))
+                    {
                         return;
+                    }
 
                     _players.Add(tmpString[2]);
 
@@ -156,7 +172,9 @@ namespace ServerDashboard
                 {
                     string[] tmpString = e.Data.Split(" ");
                     if(tmpString[2].Contains('<') || tmpString[2].Contains('>'))
+                    {
                         return;
+                    }
 
                     _ = _players.Remove(tmpString[2]);
 
@@ -167,6 +185,42 @@ namespace ServerDashboard
                     }
                     _ = LBL_PlayerList.BeginInvoke(new Action(() => { LBL_PlayerList.Text = $"Players ({_players.Count}):"; }));
                 }
+
+                _ = e.Data.ToLower().Contains("warn") || e.Data.ToLower().Contains("warning")
+                    ? RTB_ConsoleLog.BeginInvoke(new Action(() =>
+                    {
+                        RTB_ConsoleLog.SelectionStart = RTB_ConsoleLog.TextLength;
+                        RTB_ConsoleLog.SelectionLength = 0;
+                        RTB_ConsoleLog.SelectionColor = Color.FromArgb(243, 156, 18);
+                        RTB_ConsoleLog.AppendText(e.Data + Environment.NewLine);
+                        RTB_ConsoleLog.SelectionColor = RTB_ConsoleLog.ForeColor; // Reset color to default
+                        RTB_ConsoleLog.ScrollToCaret();
+                    }))
+                    : e.Data.ToLower().Contains("error")
+                        ? RTB_ConsoleLog.BeginInvoke(new Action(() =>
+                                        {
+                                            RTB_ConsoleLog.SelectionStart = RTB_ConsoleLog.TextLength;
+                                            RTB_ConsoleLog.SelectionLength = 0;
+                                            RTB_ConsoleLog.SelectionColor = Color.FromArgb(255, 82, 82);
+                                            RTB_ConsoleLog.AppendText(e.Data + Environment.NewLine);
+                                            RTB_ConsoleLog.SelectionColor = RTB_ConsoleLog.ForeColor; // Reset color to default
+                                            RTB_ConsoleLog.ScrollToCaret();
+                                        }))
+                        : e.Data.ToLower().Contains("fatal")
+                                            ? RTB_ConsoleLog.BeginInvoke(new Action(() =>
+                                                            {
+                                                                RTB_ConsoleLog.SelectionStart = RTB_ConsoleLog.TextLength;
+                                                                RTB_ConsoleLog.SelectionLength = 0;
+                                                                RTB_ConsoleLog.SelectionColor = Color.FromArgb(255, 53, 53);
+                                                                RTB_ConsoleLog.AppendText(e.Data + Environment.NewLine);
+                                                                RTB_ConsoleLog.SelectionColor = RTB_ConsoleLog.ForeColor; // Reset color to default
+                                                                RTB_ConsoleLog.ScrollToCaret();
+                                                            }))
+                                            : RTB_ConsoleLog.BeginInvoke(new Action(() =>
+                                                            {
+                                                                RTB_ConsoleLog.AppendText($"{e.Data}{Environment.NewLine}");
+                                                                RTB_ConsoleLog.ScrollToCaret(); // Auto-scroll to the end
+                                                            }));
             }
         }
 
@@ -191,7 +245,8 @@ namespace ServerDashboard
             }
             string input = "stop" + Environment.NewLine;
             _process.StandardInput.WriteLine(input);
-            TSL_Status.Text = "Stopping server...";
+            TSL_Status.Text = "Server stopping";
+            TSL_Status.Image = Properties.Resources.orange_circle;
         }
 
         private void BTN_AgreeToEula_Click(object sender, EventArgs e)
@@ -204,7 +259,7 @@ namespace ServerDashboard
 
                 BTN_AgreeToEula.Enabled = false;
                 _ = MessageBox.Show("EULA agreed successfully!");
-                TSL_Status.Text = "EULA agreed by user.";
+                TSL_Status.Text = "EULA agreed by user";
             }
             catch(Exception ex)
             {
@@ -214,7 +269,17 @@ namespace ServerDashboard
 
         private void BTN_SendCommand_Click(object sender, EventArgs e)
         {
-            RTB_ConsoleLog.AppendText("               > " + TBX_Command.Text.Trim() + Environment.NewLine);
+            if(TBX_Command.TextLength == 0)
+            {
+                return;
+            }
+
+            RTB_ConsoleLog.SelectionStart = RTB_ConsoleLog.TextLength;
+            RTB_ConsoleLog.SelectionLength = 0;
+            RTB_ConsoleLog.SelectionColor = Color.FromArgb(37, 93, 213);
+            RTB_ConsoleLog.AppendText("         INPUT > " + TBX_Command.Text.Trim() + Environment.NewLine);
+            RTB_ConsoleLog.SelectionColor = RTB_ConsoleLog.ForeColor; // Reset color to default
+            RTB_ConsoleLog.ScrollToCaret();
             _process.StandardInput.WriteLine(TBX_Command.Text.Trim());
             TBX_Command.Clear();
         }
@@ -283,6 +348,20 @@ namespace ServerDashboard
             }
         }
 
+        private void LBX_PluginsList_MouseUp(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                int index = LBX_PluginsList.IndexFromPoint(e.Location);
+
+                if(index >= 0)
+                {
+                    LBX_PluginsList.SelectedItem = LBX_PluginsList.Items[index];
+                    CMS_PluginsList.Show(LBX_PluginsList, e.Location);
+                }
+            }
+        }
+
         private void SMI_KickPlayer_Click(object sender, EventArgs e)
         {
             if(LBX_PlayerList.SelectedItems.Count == 0)
@@ -293,7 +372,9 @@ namespace ServerDashboard
             string reason = Interaction.InputBox("Enter reason:", "Kick reason", "Kicked by an operator.");
 
             if(reason.Length == 0)
+            {
                 return;
+            }
 
             foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
             {
@@ -313,7 +394,9 @@ namespace ServerDashboard
             string reason = Interaction.InputBox("Enter reason:", "Ban reason", "Banned by an operator.");
 
             if(reason.Length == 0)
+            {
                 return;
+            }
 
             foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
             {
@@ -342,18 +425,26 @@ namespace ServerDashboard
             LBX_PlayerList.SelectedIndex = -1;
         }
 
-        private void LBX_PluginsList_MouseUp(object sender, MouseEventArgs e)
+        private void SMI_MsgPlayer_Click(object sender, EventArgs e)
         {
-            if(e.Button == MouseButtons.Right)
+            if(LBX_PlayerList.SelectedItems.Count == 0)
             {
-                int index = LBX_PluginsList.IndexFromPoint(e.Location);
-
-                if(index >= 0)
-                {
-                    LBX_PluginsList.SelectedItem = LBX_PluginsList.Items[index];
-                    CMS_PluginsList.Show(LBX_PluginsList, e.Location);
-                }
+                return;
             }
+
+            string message = Interaction.InputBox("Enter message:", "Message");
+
+            if(message.Length == 0)
+            {
+                return;
+            }
+
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                _process.StandardInput.WriteLine($"msg {selectedPlayer} {message}");
+            }
+
+            LBX_PlayerList.SelectedIndex = -1;
         }
 
         private void SMI_CheckPluiginUpdate_Click(object sender, EventArgs e)
@@ -382,6 +473,66 @@ namespace ServerDashboard
             }
         }
 
+        private void SMI_SetCreative_Click(object sender, EventArgs e)
+        {
+            if(LBX_PlayerList.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                _process.StandardInput.WriteLine($"gamemode creative {selectedPlayer}");
+            }
+
+            LBX_PlayerList.SelectedIndex = -1;
+        }
+
+        private void SMI_SetSurvival_Click(object sender, EventArgs e)
+        {
+            if(LBX_PlayerList.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                _process.StandardInput.WriteLine($"gamemode survival {selectedPlayer}");
+            }
+
+            LBX_PlayerList.SelectedIndex = -1;
+        }
+
+        private void SMI_SetAdventure_Click(object sender, EventArgs e)
+        {
+            if(LBX_PlayerList.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                _process.StandardInput.WriteLine($"gamemode adventure {selectedPlayer}");
+            }
+
+            LBX_PlayerList.SelectedIndex = -1;
+        }
+
+        private void SMI_SetSpectator_Click(object sender, EventArgs e)
+        {
+            if(LBX_PlayerList.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            foreach(object? selectedPlayer in LBX_PlayerList.SelectedItems)
+            {
+                _process.StandardInput.WriteLine($"gamemode spectator {selectedPlayer}");
+            }
+
+            LBX_PlayerList.SelectedIndex = -1;
+        }
+
         private async void UpdateRamState()
         {
             ManagementObjectSearcher wmiObject = new("select * from Win32_OperatingSystem");
@@ -398,20 +549,58 @@ namespace ServerDashboard
                 {
                     double percent = (memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize * 100;
 
-                    TSL_RamState.Text = "RAM usage: " + Math.Round(percent).ToString() + "%";
+                    _ = BeginInvoke(new Action(() => { TSL_RamState.Text = "RAM usage: " + Math.Round(percent).ToString() + "%"; }));
                 }
 
                 await Task.Delay(1000);
             }
         }
+
         private async void UpdateCpuState()
         {
             PerformanceCounter c = new("Processor", "% Processor Time", "_Total");
 
             while(true)
             {
-                TSL_CpuState.Text = $"CPU: {Math.Round(c.NextValue())}%";
+                _ = BeginInvoke(new Action(() => { TSL_CpuState.Text = $"CPU: {Math.Round(c.NextValue())}%"; }));
                 await Task.Delay(1000);
+            }
+        }
+
+        private async void UpdatePingState()
+        {
+            Ping ping = new();
+
+            while(true)
+            {
+                PingReply response = await ping.SendPingAsync("8.8.8.8", 30);
+                _ = BeginInvoke(new Action(() => { TSL_PingState.Text = $"Ping: {response.RoundtripTime}ms"; }));
+                await Task.Delay(1000);
+            }
+        }
+
+        private async void ResetState()
+        {
+            await Task.Run(() => { TSL_Status.Text = "Ready"; TSL_Status.Image = Properties.Resources.gray_circle; });
+        }
+
+        private void Console_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(!BTN_StopServer.Enabled)
+            {
+                return;
+            }
+
+            e.Cancel = true;
+            _ = MessageBox.Show("WARNING! Your server is still running. Shutdown the server befor you can exit the program.", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void Console_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Escape)
+            {
+                LBX_PlayerList.SelectedIndex = -1;
+                LBX_PluginsList.SelectedIndex = -1;
             }
         }
     }

@@ -48,6 +48,8 @@
             TSL_RamState = new ToolStripStatusLabel();
             TSL_Spacing5 = new ToolStripStatusLabel();
             TSL_CpuState = new ToolStripStatusLabel();
+            TSL_Spacing6 = new ToolStripStatusLabel();
+            TSL_PingState = new ToolStripStatusLabel();
             PNL_LowerSpaceing = new Panel();
             TBX_Command = new TextBox();
             BTN_SendCommand = new Button();
@@ -58,12 +60,19 @@
             SMI_KickPlayer = new ToolStripMenuItem();
             SMI_BanPlayer = new ToolStripMenuItem();
             SMI_OpPlayer = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripSeparator();
+            SMI_MessagePlayer = new ToolStripMenuItem();
             PNL_PluginsList = new Panel();
             LBX_PluginsList = new ListBox();
             LBL_PluginsList = new Label();
             CMS_PluginsList = new ContextMenuStrip(components);
             SMI_EditPluiginConfig = new ToolStripMenuItem();
             SMI_CheckPluiginUpdate = new ToolStripMenuItem();
+            SMI_SetGamemodePlayer = new ToolStripMenuItem();
+            SMI_SetCreative = new ToolStripMenuItem();
+            SMI_SetSurvival = new ToolStripMenuItem();
+            SMI_SetAdventure = new ToolStripMenuItem();
+            SMI_SetSpectator = new ToolStripMenuItem();
             PNL_UpperSpaceing.SuspendLayout();
             PNL_Fill.SuspendLayout();
             STS_Status.SuspendLayout();
@@ -159,7 +168,7 @@
             // 
             STS_Status.BackColor = SystemColors.ControlLight;
             STS_Status.Font = new Font("Segoe UI", 9F);
-            STS_Status.Items.AddRange(new ToolStripItem[] { TSL_Status, TSL_Spacing1, TSL_IP, TSL_Spacing2, TSL_ServerPort, TSL_Spacing3, TSL_Directory, TSL_Spacing4, TSL_RamState, TSL_Spacing5, TSL_CpuState });
+            STS_Status.Items.AddRange(new ToolStripItem[] { TSL_Status, TSL_Spacing1, TSL_IP, TSL_Spacing2, TSL_ServerPort, TSL_Spacing3, TSL_Directory, TSL_Spacing4, TSL_RamState, TSL_Spacing5, TSL_CpuState, TSL_Spacing6, TSL_PingState });
             STS_Status.Location = new Point(0, 543);
             STS_Status.Name = "STS_Status";
             STS_Status.Size = new Size(1298, 22);
@@ -168,9 +177,10 @@
             // TSL_Status
             // 
             TSL_Status.ForeColor = SystemColors.ControlText;
+            TSL_Status.Image = Properties.Resources.gray_circle;
             TSL_Status.Name = "TSL_Status";
-            TSL_Status.Size = new Size(48, 17);
-            TSL_Status.Text = "Ready...";
+            TSL_Status.Size = new Size(55, 17);
+            TSL_Status.Text = "Ready";
             // 
             // TSL_Spacing1
             // 
@@ -236,6 +246,18 @@
             TSL_CpuState.Size = new Size(67, 17);
             TSL_CpuState.Text = "CPU usage:";
             // 
+            // TSL_Spacing6
+            // 
+            TSL_Spacing6.Name = "TSL_Spacing6";
+            TSL_Spacing6.Size = new Size(22, 17);
+            TSL_Spacing6.Text = "     ";
+            // 
+            // TSL_PingState
+            // 
+            TSL_PingState.Name = "TSL_PingState";
+            TSL_PingState.Size = new Size(59, 17);
+            TSL_PingState.Text = "Ping: 0ms";
+            // 
             // PNL_LowerSpaceing
             // 
             PNL_LowerSpaceing.BackColor = SystemColors.Control;
@@ -250,6 +272,8 @@
             // TBX_Command
             // 
             TBX_Command.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            TBX_Command.AutoCompleteCustomSource.AddRange(new string[] { "?", "ability", "advancement", "alwaysday", "attribute", "ban", "ban-ip", "banlist", "bossbar", "camera", "camerashake", "changesetting", "clear", "clearspawnpoint", "clone", "connect", "damage", "data", "datapack", "daylock", "debug", "dedicatedwsserver", "defaultgamemode", "deop", "dialogue", "difficulty", "effect", "enchant", "event", "execute", "experience", "fill", "fillbiome", "fog", "forceload", "function", "gamemode", "gamerule", "gametest", "give", "help", "immutableworld", "item", "jfr", "kick", "kill", "list", "locate", "loot", "me", "mobevent", "msg", "music", "op", "ops", "pardon", "pardon-ip", "particle", "perf", "permission", "place", "playanimation", "playsound", "publish", "random", "recipe", "reload", "remove", "replaceitem", "return", "ride", "save", "save-all", "save-off", "save-on", "say", "schedule", "scoreboard", "script", "scriptevent", "seed", "setblock", "setidletimeout", "setmaxplayers", "setworldspawn", "spawnpoint", "spectate", "spreadplayers", "stop", "stopsound", "structure", "summon", "tag", "team", "teammsg", "teleport", "tell", "tellraw", "testfor", "testforblock", "testforblocks", "tickingarea", "time", "title", "titleraw", "tm", "toggledownfall", "tp", "trigger", "transferserver", "volumearea", "w", "wb", "weather", "whitelist", "worldborder", "worldbuilder", "wsserver", "xp" });
+            TBX_Command.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             TBX_Command.BackColor = SystemColors.Control;
             TBX_Command.CausesValidation = false;
             TBX_Command.Enabled = false;
@@ -314,31 +338,43 @@
             // 
             // CMS_PlayerList
             // 
-            CMS_PlayerList.Items.AddRange(new ToolStripItem[] { SMI_KickPlayer, SMI_BanPlayer, SMI_OpPlayer });
+            CMS_PlayerList.Items.AddRange(new ToolStripItem[] { SMI_KickPlayer, SMI_BanPlayer, SMI_OpPlayer, toolStripMenuItem1, SMI_MessagePlayer, SMI_SetGamemodePlayer });
             CMS_PlayerList.Name = "CMS_PlayerList";
             CMS_PlayerList.RenderMode = ToolStripRenderMode.System;
-            CMS_PlayerList.Size = new Size(174, 70);
+            CMS_PlayerList.Size = new Size(208, 142);
             // 
             // SMI_KickPlayer
             // 
             SMI_KickPlayer.Name = "SMI_KickPlayer";
-            SMI_KickPlayer.Size = new Size(173, 22);
+            SMI_KickPlayer.Size = new Size(207, 22);
             SMI_KickPlayer.Text = "Kick player";
             SMI_KickPlayer.Click += SMI_KickPlayer_Click;
             // 
             // SMI_BanPlayer
             // 
             SMI_BanPlayer.Name = "SMI_BanPlayer";
-            SMI_BanPlayer.Size = new Size(173, 22);
+            SMI_BanPlayer.Size = new Size(207, 22);
             SMI_BanPlayer.Text = "Ban player";
             SMI_BanPlayer.Click += SMI_BanPlayer_Click;
             // 
             // SMI_OpPlayer
             // 
             SMI_OpPlayer.Name = "SMI_OpPlayer";
-            SMI_OpPlayer.Size = new Size(173, 22);
+            SMI_OpPlayer.Size = new Size(207, 22);
             SMI_OpPlayer.Text = "Make player an OP";
             SMI_OpPlayer.Click += SMI_OpPlayer_Click;
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(204, 6);
+            // 
+            // SMI_MessagePlayer
+            // 
+            SMI_MessagePlayer.Name = "SMI_MessagePlayer";
+            SMI_MessagePlayer.Size = new Size(207, 22);
+            SMI_MessagePlayer.Text = "Message player";
+            SMI_MessagePlayer.Click += SMI_MsgPlayer_Click;
             // 
             // PNL_PluginsList
             // 
@@ -396,6 +432,41 @@
             SMI_CheckPluiginUpdate.Text = "Check for updates";
             SMI_CheckPluiginUpdate.Click += SMI_CheckPluiginUpdate_Click;
             // 
+            // SMI_SetGamemodePlayer
+            // 
+            SMI_SetGamemodePlayer.DropDownItems.AddRange(new ToolStripItem[] { SMI_SetCreative, SMI_SetSurvival, SMI_SetAdventure, SMI_SetSpectator });
+            SMI_SetGamemodePlayer.Name = "SMI_SetGamemodePlayer";
+            SMI_SetGamemodePlayer.Size = new Size(207, 22);
+            SMI_SetGamemodePlayer.Text = "Set gamemode for player";
+            // 
+            // SMI_SetCreative
+            // 
+            SMI_SetCreative.Name = "SMI_SetCreative";
+            SMI_SetCreative.Size = new Size(180, 22);
+            SMI_SetCreative.Text = "Creative";
+            SMI_SetCreative.Click += SMI_SetCreative_Click;
+            // 
+            // SMI_SetSurvival
+            // 
+            SMI_SetSurvival.Name = "SMI_SetSurvival";
+            SMI_SetSurvival.Size = new Size(180, 22);
+            SMI_SetSurvival.Text = "Survival";
+            SMI_SetSurvival.Click += SMI_SetSurvival_Click;
+            // 
+            // SMI_SetAdventure
+            // 
+            SMI_SetAdventure.Name = "SMI_SetAdventure";
+            SMI_SetAdventure.Size = new Size(180, 22);
+            SMI_SetAdventure.Text = "Adventure";
+            SMI_SetAdventure.Click += SMI_SetAdventure_Click;
+            // 
+            // SMI_SetSpectator
+            // 
+            SMI_SetSpectator.Name = "SMI_SetSpectator";
+            SMI_SetSpectator.Size = new Size(180, 22);
+            SMI_SetSpectator.Text = "Spectator";
+            SMI_SetSpectator.Click += SMI_SetSpectator_Click;
+            // 
             // Console
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -407,10 +478,14 @@
             Controls.Add(PNL_PluginsList);
             Controls.Add(PNL_LowerSpaceing);
             Controls.Add(STS_Status);
+            DoubleBuffered = true;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            KeyPreview = true;
             MinimumSize = new Size(758, 549);
             Name = "Console";
             Text = "Console";
+            FormClosing += Console_FormClosing;
+            KeyDown += Console_KeyDown;
             PNL_UpperSpaceing.ResumeLayout(false);
             PNL_Fill.ResumeLayout(false);
             STS_Status.ResumeLayout(false);
@@ -463,5 +538,14 @@
         private ContextMenuStrip CMS_PluginsList;
         private ToolStripMenuItem SMI_EditPluiginConfig;
         private ToolStripMenuItem SMI_CheckPluiginUpdate;
+        private ToolStripStatusLabel TSL_Spacing6;
+        private ToolStripStatusLabel TSL_PingState;
+        private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripMenuItem SMI_MessagePlayer;
+        private ToolStripMenuItem SMI_SetGamemodePlayer;
+        private ToolStripMenuItem SMI_SetCreative;
+        private ToolStripMenuItem SMI_SetSurvival;
+        private ToolStripMenuItem SMI_SetAdventure;
+        private ToolStripMenuItem SMI_SetSpectator;
     }
 }
